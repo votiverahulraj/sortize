@@ -15,9 +15,9 @@
               <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                  <a href="{{route('admin.coachProfile')}}" class="btn btn-outline-info btn-fw" style="float: right;">Add Coach</a>
+                  <a href="{{route('admin.coachProfile')}}" class="btn btn-outline-info btn-fw" style="float: right;">Add Interprise</a>
                     <h4 class="card-title">User Management</h4>
-                    <p class="card-description"> Coach List
+                    <p class="card-description"> Interprise List
                     </p>
 
                     <form id="bulkDeleteForm" method="POST" action="{{ route('admin.bulkDeleteCoach') }}">
@@ -31,7 +31,6 @@
                               <th> First name </th>
                               <th> Last name </th>
                               <th> Email </th>
-                              <th> Country </th>
                               <th> Status</th>
                               <th> Service Packages</th>
                               <th> Action</th>
@@ -47,7 +46,6 @@
                               <td> {{$list->first_name}} </td>
                               <td>{{$list->last_name}} </td>
                               <td> {{$list->email}}</td>
-                              <td> {{$list->country_name}} </td>
                               <td><select class="user_status form-select form-select-sm" user="{{$list->id}}">
                                   <option value="0" {{$list->user_status==0?'selected':''}}>Pending</option>
                                   <option value="1" {{$list->user_status==1?'selected':''}}>Approved</option>

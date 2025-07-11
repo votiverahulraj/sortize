@@ -8,16 +8,21 @@ use App\Http\Controllers\ServicePackageController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\BusinessController;
+use App\Http\Controllers\EventController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/test', function () {
-    return 'Laravel is working test!';
-});
+// Route::get('/test', function () {
+//     return 'Laravel is working test!';
+// });
+// Route::get('/', function () {
+//     return redirect()->route('signup');
+// });
 
-
+// Route::any('/', [BusinessController::class, 'signup'])->name('signup');
 //echo "hii";die;
 
 Route::any('/admin', [AdminController::class, 'login'])->name('admin.login');
@@ -26,7 +31,27 @@ Route::post('/admin/getstate', [AdminController::class, 'getstate']);
 Route::post('/admin/getcity', [AdminController::class, 'getcity']);
 Route::post('/admin/getsubType', [AdminController::class, 'getsubType']);
 
+Route::any('/register', [BusinessController::class, 'signup'])->name('signup');
+Route::post('/register', [BusinessController::class, 'register'])->name('business.register');
+Route::any('/login', [BusinessController::class, 'login'])->name('login');
+Route::post('/login', [BusinessController::class, 'Enterpriselogin'])->name('interprise.login');
+Route::any('/logout', [BusinessController::class, 'logout'])->name('interprise.logout');
 
+Route::post('/getstate', [BusinessController::class, 'getstate']);
+Route::post('/getcity', [BusinessController::class, 'getcity']);
+Route::post('/getsubType', [BusinessController::class, 'getsubType']);
+
+Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
+Route::any('/dashboard/create-event', [BusinessController::class, 'createEvent'])->name('interprise.create-event');
+Route::any('/dashboard/create-event', [EventController::class, 'createEvent'])->name('interprise.create-event');
+Route::post('/add-event/{id?}', [EventController::class, 'addEvent'])->name('interprise.add-event');
+Route::get('/edit-event/{id?}', [EventController::class, 'editEvent'])->name('interprise.edit-event');
+Route::any('/dashboard/event-list', [EventController::class, 'eventList'])->name('interprise.event-list');
+Route::post('/delete_event', [EventController::class, 'delete'])->name('interprise.delete_event');
+Route::get('/view-event/{id?}', [EventController::class, 'viewEvent'])->name('interprise.view-event');
+
+Route::any('/dashboard/create-ticket', [BusinessController::class, 'createTicket'])->name('interprise.create-ticket');
+Route::any('/dashboard/ticket-list', [BusinessController::class, 'ticketList'])->name('interprise.ticket-list');
 
 // Group all protected admin routes under middleware
 Route::middleware(['auth:admin', 'admin'])->group(function () {
@@ -114,3 +139,9 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::post('/admin/status', [ReviewController::class, 'status'])->name('admin.status');
     Route::post('/admin/enquiry_status', [UserManagementController::class, 'enquiry_status']);
 });
+
+
+
+
+
+

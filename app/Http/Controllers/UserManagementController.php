@@ -129,150 +129,64 @@ class UserManagementController extends Controller
     }
     public function coachList()
     {
-        //This function is for list the coach
+        
         $users = DB::table('users')
-            ->join('master_country', 'master_country.country_id', '=', 'users.country_id')
             ->where('user_type', 3)
             ->where('is_deleted', 0)
-            ->select('users.*', 'master_country.country_name')
             ->orderBy('id', 'DESC')
             ->paginate(20);
         return view('admin.coach_list', compact('users'));
     }
     public function addCoach(Request $request, $id = null)
     {
-        $country = DB::table('master_country')->where('country_status', 1)->get();
-        $language = DB::table('master_language')->where('is_active', 1)->get();
-        $service = DB::table('master_service')->where('is_active', 1)->get();
-        $type = DB::table('coach_type')->where('is_active', 1)->get();
-        $category = DB::table('coaching_cat')->where('is_active', 1)->get();
-        $mode = DB::table('delivery_mode')->where('is_active', 1)->get();
 
-        $subtype = $user_detail = $state = $city = $profession = "";
-        $selectedServiceIds = $selectedLanguageIds = array();
-        if ($id != null) {
-            $user_detail = DB::table('users')->where('id', $id)->first();
-            $state = DB::table('master_state')->where('state_country_id', $user_detail->country_id)->get();
-            $city = DB::table('master_city')->where('city_state_id', $user_detail->state_id)->get();
+    //   $email = $request->email; 
 
-            $profession = DB::table('user_professional')->where('user_id', $id)->first();
+    // if (User::where('email', $email)->exists()) {
 
-            $subtype = DB::table('coach_subtype')->where('coach_type_id', $profession->coach_type)->get();
-
-            $selectedServiceIds = UserService::where('user_id', $id)->pluck('service_id')->toArray();
-            $selectedLanguageIds = UserLanguage::where('user_id', $id)->pluck('language_id')->toArray();
-        }
-        if ($request->isMethod('post')) {
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Email already exists.'
+    //     ]);
+    // }
+         if ($request->isMethod('post')) {
+      
             $user = User::find($request->user_id);
             if (!$user) {
                 $user = new User();
             }
-
-            if ($request->hasFile('profile_image')) {
-                $image = $request->file('profile_image');
-                $imageName = "pro" . time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('/uploads/profile_image'), $imageName);
-                $user->profile_image = $imageName;
-            }
-
+            $user->company_type       = $request->company_type;
             $user->first_name       = $request->first_name;
             $user->last_name        = $request->last_name;
             $user->email            = $request->email;
             $user->contact_number   = $request->contact_number;
-            $user->short_bio        = $request->short_bio;
+            $user->c_name        = $request->c_name;
             if ($request->password != '') {
                 $user->password         = $request->password;
             }
-            $user->professional_title = $request->professional_title;
-            $user->gender           = $request->gender;
-            $user->country_id       = $request->country_id;
-            $user->state_id         = (int) $request->state_id;
-            $user->city_id          = (int) $request->city_id;
+            $user->Website_link = $request->Website_link;
+            $user->city_id          = $request->city_id;
             $user->is_verified      = $request->is_verified;
             $user->user_type        = 3;
             $user->user_timezone    = $request->user_time;
             $user->email_verified   = 1;
+            $user->is_verified   = 1;
             $user->created_at       = date('Y-m-d H:i:s');
             $user->save();
-            $user_id = $user->id;
 
-            //Now update the professional profile
+             return redirect()->route("admin.coachList")->with("success", "Coach profile updated successfully.");
 
-            $professional = Professional::where('user_id', $user_id)->first();
-
-            if (!$professional) {
-                $professional = new Professional();
-                $professional->user_id = $user_id;
-            }
-
-            $professional->coaching_category    = $request->coaching_category;
-            $professional->delivery_mode        = $request->delivery_mode;
-            $professional->free_trial_session   = $request->free_trial_session;
-            $professional->is_volunteered_coach = $request->is_volunteered_coach;
-            $professional->volunteer_coaching   = $request->volunteer_coaching;
-            $professional->coach_type           = (int) $request->coach_type;
-            $professional->coach_subtype        = $request->coach_subtype;
-            $professional->save();
-
-            //now add the service 
-            if ($request->service_offered) {
-                $newServiceIds = $request->input('service_offered', []);
-
-                $existingServiceIds = UserService::where('user_id', $user_id)
-                    ->pluck('service_id')
-                    ->toArray();
-
-                // Find services to remove
-                $toDelete = array_diff($existingServiceIds, $newServiceIds);
-
-                // Find services to add
-                $toAdd = array_diff($newServiceIds, $existingServiceIds);
-
-                // Delete unselected services
-                UserService::where('user_id', $user_id)
-                    ->whereIn('service_id', $toDelete)
-                    ->delete();
-
-                // Add new services
-                foreach ($toAdd as $serviceId) {
-                    UserService::create([
-                        'user_id' => $user_id,
-                        'service_id' => $serviceId,
-                    ]);
-                }
-            }
-
-            if ($request->language) {
-                $newlangIds = $request->input('language', []);
-
-                $existingLanguageIds = UserLanguage::where('user_id', $user_id)
-                    ->pluck('language_id')
-                    ->toArray();
-
-                // Find services to remove
-                $toDeletel = array_diff($existingLanguageIds, $newlangIds);
-
-                // Find services to add
-                $toAddl = array_diff($newlangIds, $existingLanguageIds);
-
-                // Delete unselected services
-                UserLanguage::where('user_id', $user_id)
-                    ->whereIn('language_id', $toDeletel)
-                    ->delete();
-
-                // Add new services
-                foreach ($toAddl as $languageId) {
-                    UserLanguage::create([
-                        'user_id' => $user_id,
-                        'language_id' => $languageId,
-                    ]);
-                }
-            }
-
-            return redirect()->route("admin.coachList")->with("success", "Coach profile updated successfully.");
+   //           if ($request->ajax()) {
+   //      return response()->json([
+   //          'success' => true,
+   //          'message' => 'User profile updated successfully.',
+   //          'isEdit' => true,
+   //          'redirect' => route('admin.coachList')
+   //      ]);
+   // }
         }
 
-        return view('admin.add_coach', compact('category', 'mode', 'type', 'subtype', 'country', 'user_detail', 'state', 'city', 'profession', 'language', 'service', 'selectedServiceIds', 'selectedLanguageIds'));
+        // return view('admin.add_coach', compact('category', 'mode', 'type', 'subtype', 'country', 'user_detail', 'state', 'city', 'profession', 'language', 'service', 'selectedServiceIds', 'selectedLanguageIds'));
     }
     public function addProfessional(Request $request, $id = null)
     {
@@ -370,89 +284,22 @@ class UserManagementController extends Controller
     }
     public function coachProfile(Request $request, $id = null)
     {
-        $country = DB::table('master_country')->where('country_status', 1)->get();
-        $language = DB::table('master_language')->where('is_active', 1)->get();
-        $service = DB::table('master_service')->where('is_active', 1)->get();
-        $type = DB::table('coach_type')->where('is_active', 1)->get();
-        $category = DB::table('coaching_cat')->where('is_active', 1)->get();
-        $mode = DB::table('delivery_mode')->where('is_active', 1)->get();
 
-        $subtype = $user_detail = $state = $city = $profession = $document = "";
-        $selectedServiceIds = $selectedLanguageIds = array();
-        if ($id != null) {
-            $user_detail = DB::table('users')->where('id', $id)->first();
-            $state = DB::table('master_state')->where('state_country_id', $user_detail->country_id)->get();
-            $city = DB::table('master_city')->where('city_state_id', $user_detail->state_id)->get();
+       $user_detail = DB::table('users')->where('id', $id)->first();
 
-            $profession = DB::table('user_professional')->where('user_id', $id)->first();
-            $subtype = collect(); // Default to empty if no profession
 
-            if ($profession && isset($profession->coach_type)) {
-                $subtype = DB::table('coach_subtype')
-                    ->where('coach_type_id', $profession->coach_type)
-                    ->get();
-            }
-
-            $selectedServiceIds = UserService::where('user_id', $id)->pluck('service_id')->toArray();
-            $selectedLanguageIds = UserLanguage::where('user_id', $id)->pluck('language_id')->toArray();
-
-            $document = DB::table('user_document')->where('user_id', $id)->get();
-        }
-
-        return view('admin.coach_profile', compact('document', 'category', 'mode', 'type', 'subtype', 'country', 'user_detail', 'state', 'city', 'profession', 'language', 'service', 'selectedServiceIds', 'selectedLanguageIds'));
+       //dd($user_detail);
+          
+        return view('admin.coach_profile',compact('user_detail'));
     }
     public function viewCoach($id)
     {
         //This function is for view the coach profile
         if ($id != null) {
             $user_detail = DB::table('users')
-                ->join('master_country as mc', 'users.country_id', '=', 'mc.country_id')
-                ->join('master_state as ms', 'users.state_id', '=', 'ms.state_id')
-                ->join('master_city as c', 'users.city_id', '=', 'c.city_id')
-                ->select('users.*', 'mc.country_name', 'ms.state_name', 'c.city_name')
                 ->where('id', $id)->first();
-
-            $profession = DB::table('user_professional as up')
-                ->join('coach_type as ct', 'up.coach_type', '=', 'ct.id')
-                ->join('coach_subtype as cst', 'up.coach_subtype', '=', 'cst.id')
-                ->join('coaching_cat as cat', 'up.coaching_category', '=', 'cat.id')
-                ->join('delivery_mode as dm', 'up.delivery_mode', '=', 'dm.id')
-                ->select('up.*', 'ct.type_name', 'cst.subtype_name', 'cat.category_name', 'dm.mode_name')
-                ->where('up.user_id', $id)->first();
-
-            $language = DB::table('user_language as ul')
-                ->join('master_language as ml', 'ul.language_id', '=', 'ml.id')
-                ->where('ul.user_id', $id)
-                ->select(DB::raw('GROUP_CONCAT(ml.language SEPARATOR ", ") as language_names'))
-                ->first();
-
-            $service = DB::table('user_service as us')
-                ->join('master_service as ms', 'us.service_id', '=', 'ms.id')
-                ->where('us.user_id', $id)
-                ->select(DB::raw('GROUP_CONCAT(ms.service SEPARATOR ", ") as service_names'))
-                ->first();
-
-            $coach_enquiry = DB::table('enquiry')
-                ->join('users as coach', 'coach.id', '=', 'enquiry.coach_id')
-                ->select(
-                    'coach.id as coach_id',
-                    'coach.first_name as coach_first_name',
-                    'coach.last_name as coach_last_name',
-                    'coach.email as coach_email',
-                    'coach.contact_number as coach_contact_number',
-                    'enquiry.enquiry_status as coach_enquiry_status',
-                    'enquiry.id',
-                    'enquiry.enquiry_title',
-                    'enquiry.enquiry_detail'
-                )
-                ->where('enquiry.coach_id', $id)
-                ->orderBy('enquiry.id', 'DESC')
-                ->paginate(20);
-
-
-            $document = DB::table('user_document')->where('user_id', $id)->get();
         }
-        return view('admin.view_coach_profile', compact('document', 'user_detail', 'profession', 'language', 'service', 'coach_enquiry'));
+        return view('admin.view_coach_profile', compact('user_detail'));
     }
 
     public function enquiry_status(Request $request)

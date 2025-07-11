@@ -47,7 +47,7 @@
                   <div class="col-md-3 mb-4 stretch-card transparent">
                     <div class="card card-light-blue">
                       <div class="card-body">
-                        <p class="mb-4">Number of Coaches</p>
+                        <p class="mb-4">Number of Interprise</p>
                         <p class="fs-30 mb-2">34040</p>
                         <p>2.00% (30 days)</p>
                       </div>
@@ -102,12 +102,12 @@
               <div class="col-md-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <p class="card-title mb-0">Coach Subscription</p>
+                    <p class="card-title mb-0">Interprise Subscription</p>
                     <div class="table-responsive">
                       <table class="table table-striped table-borderless">
                         <thead>
                           <tr>
-                            <th>Coach</th>
+                            <th>Interprise</th>
                             <th>Price</th>
                             <th>Date</th>
                             <th>Status</th>

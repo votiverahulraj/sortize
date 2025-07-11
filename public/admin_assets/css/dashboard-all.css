@@ -1,0 +1,32 @@
+.add-evnt .form-group input {
+    padding: 15px;
+    font-size: 14px;
+}
+.add-evnt .form-group input:focus {
+    box-shadow: none;
+    border: 1px solid #0092FA;
+}
+.add-evnt .form-group textarea:focus {
+    box-shadow: none;
+    border: 1px solid #0092FA;
+}
+.add-evnt select {
+    padding: 15px;
+    font-size: 14px;
+}
+.add-evnt .form-group label {
+    font-weight: 600;
+}
+form.add-evnt .form-group {
+    margin-bottom: 10px;
+}
+.add-evnt .form-group select:focus {
+    box-shadow: none;
+    border: 1px solid #0092FA;
+}
+.btn-submit {
+    background: #0092FA;
+    border: 1px solid #0092FA !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}

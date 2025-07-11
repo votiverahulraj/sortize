@@ -16,15 +16,69 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use DB;
 
-
-
 class UserController extends Controller
 {
+            public function register12(Request $request)
+    {
 
-    
-public function register(Request $request)
+        // echo "test12";die;
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'nullable|string|max:255',
+            'email'      => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->where(function ($query) {
+                    return $query->where('is_deleted', 0); // only check for non-deleted users
+                }),
+            ],
+            'password'   => 'required|string|min:6',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            // 'company_type'  => $request->company_type,
+            // 'contact_number'  => $request->contact_number,
+            // 'Website_link' => $request->Website_link,
+            'professional_title' => $request->professional_title,
+            'is_paid' => 0,
+            'user_type' => 2,
+            'is_paid' => 0,
+            'email_verified' => 0,
+            'user_age' => $request->user_age,
+            'password'   => Hash::make($request->password),
+        ]);
+
+        $token = JWTAuth::fromUser($user);
+        //   $token = $user->createToken($request->email)->plainTextToken;
+
+        return response()->json([
+            'user' => [
+                'id'         => $user->id,
+                'email'      => $user->email,
+                'first_name' => $user->first_name,
+                'last_name'  => $user->last_name,
+                'user_type'  => $user->user_type,
+             
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ],
+            'token' => $token
+        ]);
+    }
+
+    public function register(Request $request)
 {
-    // echo "<pre>";print_r($request->all());die;
+    // echo "test";die;
     $response = [
         'status' => 0,
         'message' => '',
@@ -34,8 +88,8 @@ public function register(Request $request)
         'first_name' => $request->input('first_name', ''),
         'last_name' => $request->input('last_name', ''),
         'email' => $request->input('email', ''),
+        'contact_number' => $request->input('contact_number', ''),
         'password' => $request->input('password', ''),
-        'user_type' => $request->input('user_type', ''),
         'user_age' => $request->input('user_age', ''),
         'professional_title' => $request->input('professional_title', ''),
         'deviceid' => $request->input('deviceid', ''),
@@ -49,10 +103,7 @@ public function register(Request $request)
     } elseif (empty($data_post['last_name'])) {
         $response['errorcode'] = "40003";
         $response['message'] = "Last Name: Required parameter missing";
-    }elseif (empty($data_post['user_type'])) {
-        $response['errorcode'] = "40003";
-        $response['message'] = "User Type: Required parameter missing";
-    }elseif (empty($data_post['email'])) {
+    } elseif (empty($data_post['email'])) {
         $response['errorcode'] = "40002";
         $response['message'] = "Email ID: Required parameter missing";
     } elseif (empty($data_post['password'])) {
@@ -64,30 +115,29 @@ public function register(Request $request)
     } elseif (empty($data_post['professional_title'])) {
         $response['errorcode'] = "40003";
         $response['message'] = "Professional Title: Required parameter missing";
-    } elseif (empty($data_post['deviceid'])) {
-        $response['errorcode'] = "40005";
-        $response['message'] = "Device ID: Required parameter missing";
-    } elseif (empty($data_post['devicetype'])) {
+    } 
+    // elseif (empty($data_post['deviceid'])) {
+    //     $response['errorcode'] = "40005";
+    //     $response['message'] = "Device ID: Required parameter missing";
+    // } 
+    elseif (empty($data_post['contact_number'])) {
         $response['errorcode'] = "40006";
-        $response['message'] = "Device Type: Required parameter missing";
+        $response['message'] = "Contact Number: Required parameter missing";
     } else {
         try {
             // Check for duplicate email
             if (User::where('email', $data_post['email'])->where('is_deleted', 0)->exists()) {
                 $response['errorcode'] = "40007";
                 $response['message'] = "The email ID is already registered.";
+            }  elseif (User::where('contact_number', $data_post['contact_number'])->exists()) {
+                $response['errorcode'] = "40008";
+                $response['message'] = "The mobile number is already registered.";
             } else {
                 // Generate token for email verification
                 $verification_token = Str::random(64);
 
                 // echo $verification_token;die;
                 // Create user
-
-                if ($request->hasFile('certificate')) {
-                    $image = $request->file('certificate');
-                    $imageName = "stu" . time() . '.' . $image->getClientOriginalExtension();
-                    $image->move(public_path('/uploads/student_certificate'), $imageName);
-                } 
                 $user = User::create([
                     'first_name' => $data_post['first_name'],
                     'last_name' => $data_post['last_name'],
@@ -95,13 +145,13 @@ public function register(Request $request)
                     'password' => Hash::make($data_post['password']),
                     'user_age' => $data_post['user_age'],
                     'professional_title' => $data_post['professional_title'],
+                    'contact_number' => $data_post['contact_number'],
                     'device_id' => $data_post['deviceid'],
-                    'student_certificate' => $imageName,
                     'device_type' => $data_post['devicetype'],
-                    'user_status' => 0,
+                    // 'user_status' => 0,
                     'is_deleted' => 0,
                     'is_paid' => 0,
-                    'user_type' => $data_post['user_type'],
+                    'user_type' => 2,
                     'email_verified' => 0,
                     'email_verification_token' => $verification_token, // You need this column in users table
                 ]);
@@ -498,72 +548,6 @@ public function resetPassword(Request $request)
     // Return JSON response
     return response()->json($response);
 }
-
-public function suggested_user()
-{
-    // echo "test";die;
-    $response = [
-        'status' => 0,
-        'message' => '',
-        'data' => null
-    ];
-
-    try {
-        $user_details = DB::table('users')
-            ->select('id', 'first_name', 'last_name', 'email', 'profile_image')
-            ->where('user_status', 0)
-            ->where('is_deleted', 0)
-            ->where('user_type', 2)
-            ->where('email_verified', 1)
-            ->get()
-            ->map(function ($user) {
-                $user->profile_image = $user->profile_image
-                    ? asset('public/uploads/profile_image/' . $user->profile_image)
-                    : null;
-                return $user;
-            });
-
-            // print_r($user_details);die;
-        $response['status'] = 1;
-        $response['message'] = 'User Listing.';
-        $response['data'] = ['user_list' => $user_details];
-
-    } catch (\Exception $e) {
-        $response['message'] = 'An unexpected error occurred: ' . $e->getMessage();
-    }
-
-    return response()->json($response);
-}
-
-public function professional_title()
-{
-    // echo "test";die;
-    $response = [
-        'status' => 0,
-        'message' => '',
-        'data' => null
-    ];
-
-    try {
-
-        $professional_title_listing = DB::table('master_professional_title')
-                                ->select('id', 'professional_title')
-                                ->where('is_deleted','0')
-                                ->where('is_active','1')
-                                ->get();
-      
-            // print_r($user_details);die;
-        $response['status'] = 1;
-        $response['message'] = 'professional title listing';
-        $response['data'] = ['professional_title_listing' => $professional_title_listing];
-
-    } catch (\Exception $e) {
-        $response['message'] = 'An unexpected error occurred: ' . $e->getMessage();
-    }
-
-    return response()->json($response);
-}
-
     public function updateProfileImage(Request $request)
     {
         try {

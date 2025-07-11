@@ -18,9 +18,9 @@
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.serviceList')}}">Service List</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.languageList')}}">Language List</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.deliveryModeList')}}">Delivery Mode List</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachTypeList')}}">Coach Category List</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachTypeList')}}">Interprise Category List</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.subscriptionList')}}">Subscription Plan List</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachSubTypeList')}}">Coach SubCategory List</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachSubTypeList')}}">Interprise SubCategory List</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachingCategoryList')}}">Coaching Category List</a></li>
           <!-- <li class="nav-item"> <a class="nav-link" href="{{route('admin.enquiryList')}}">Enquiry List</a></li> -->
         </ul>
@@ -36,7 +36,7 @@
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.userList')}}">User List</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachList')}}">Coach List</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachList')}}">Interprise List</a></li>
           
         </ul>
       </div>
