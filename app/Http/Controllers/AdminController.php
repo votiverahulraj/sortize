@@ -104,6 +104,22 @@ class AdminController extends Controller
         return response()->json($data);
     }
 
+     public function eventList(Request $request)
+    {
+        $eventlist = DB::table('events')->where('is_deleted', '=', 0)->paginate(20);
+
+        return view('admin.event-list', compact('eventlist'));
+    }
+   public function viewEvent(Request $request)
+    {
+        $id = $request->id;
+
+        $eventdetails = DB::table('events')->where('id', '=', $id)->where('is_deleted', '=', 0)->first();
+   
+         return view('admin.view-event', compact('eventdetails'));
+
+    }
+
 }
 
 

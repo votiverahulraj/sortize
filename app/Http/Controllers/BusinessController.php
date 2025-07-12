@@ -29,6 +29,18 @@ class BusinessController extends Controller
      public function register(Request $request)
     {
 
+        $email = $request->email; 
+
+        //dd($email);
+
+    if (User::where('email', $email)->exists()) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Email already exists.'
+        ]);
+    }
+
         if ($request->isMethod('post')) {
       
             $user = User::find($request->user_id);
@@ -54,8 +66,19 @@ class BusinessController extends Controller
             $user->created_at       = date('Y-m-d H:i:s');
             $user->save();
 
-            return redirect()->route("login")->with("success", "Coach profile updated successfully.");
+              if ($request->ajax()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'User profile updated successfully.',
+            'isEdit' => true,
+            'redirect' => route('login')
+        ]);
+   }
+
+             // return redirect()->route("login")->with("success", "Coach profile updated successfully.");
         }
+
+
         
     }
 

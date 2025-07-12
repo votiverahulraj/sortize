@@ -44,6 +44,10 @@
 .reg_wrapper .form-group {
     margin-bottom: 15px !important;
 }
+.error {
+    color: red;
+    font-size: 14px;
+  }
 	</style>
   </head>
 
@@ -57,10 +61,11 @@
                <div class="brand-logo">
                 <img src="{{ url('/public') }}/admin_assets/images/Sortiz.png" alt="logo" style="width: 83%;">
                 </div>
+                <div id="responseMessage"></div>
                <div class=" text-center align-items-center">
   <h4 class="font-weight-light">Interprise Register.</h4>
 </div>
-                <form class="reg_form" method="post" action="{{ route('business.register') }}" enctype="multipart/form-data">
+  <form class="reg_form" id="registrationForm" enctype="multipart/form-data">
   {!! csrf_field() !!}
 
 <div class="reg_wrapper">
@@ -85,13 +90,13 @@
 	  <!-- Email -->
 	  <div class="form-group">
 		<label style="width: 250px;" class="mb-0 mr-2">Email Address</label>
-		<input type="email" class="form-control form-control-sm" name="email" required>
+		<input type="email" class="form-control form-control-sm" name="email" id="email" required>
 	  </div>
 	  
 	   <!-- Password -->
 	  <div class="form-group">
 		<label style="width: 250px;" class="mb-0 mr-2">Password</label>
-		<input type="password" class="form-control form-control-sm" name="password" required>
+		<input type="password" class="form-control form-control-sm" name="password" id="password" required>
 	  </div>
 
 	  <!-- Website Link -->
@@ -132,7 +137,7 @@
 	  <!-- Confirm Password -->
 	  <div class="form-group">
 		<label style="width: 250px;" class="mb-0 mr-2">Confirm Password</label>
-		<input type="password" class="form-control form-control-sm" name="password_confirmation" required>
+		<input type="password" class="form-control form-control-sm" name="password_confirmation" id="password_confirmation" required>
 	  </div>
 	 
 	  
@@ -178,15 +183,88 @@
    <!-- Select2 CSS (in <head>) -->
     
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{{ url('/public') }}/admin_assets/vendors/select2/select2.min.js"></script>
- <script src="{{ url('/public') }}/admin_assets/js/select2.js"></script>
+
+  <script src="{{ url('/public') }}/js/jquery.validate.min.js"></script>
+<!-- Now set $j after both are loaded -->
 <script>
-  $(document).ready(function() {
-    $('.js-example-basic-multiple').select2({
-      placeholder: "Select services"
-    });
-  });
+  var $j = jQuery.noConflict();
 </script>
+<script>
+   $j(document).ready(function () {
+    $j('#registrationForm').validate({
+    rules: {
+      first_name: { required: true, minlength: 2 },
+      last_name: { required: true, minlength: 2 },
+      email: { required: true, email: true },
+      password: { required: true, minlength: 6 },
+      password_confirmation: { required: true, minlength: 6, equalTo: "#password" },
+      city_id: { required: true,  }
+      
+    },
+    messages: {
+      first_name: "Enter first name",
+      last_name: "Enter last name",
+      email: {
+        required: "Email is required",
+        email: "Enter a valid email"
+      },
+      password: {
+        required: "Password required",
+        minlength: "Min 6 characters"
+      },
+      password_confirmation: {
+      required: "Please confirm your password",
+      minlength: "Min 6 characters",
+      equalTo: "Passwords do not match"
+    },
+    
+      city_id: "Select city",
+    
+    },
+      submitHandler: function(form) {
+      console.log("Validation passed, submitting form");
+      var formData = new FormData(form);
+      var email = $j('#email').val();
+      formData.append('email', email);
+      $j.ajax({
+        url: "{{ route('business.register') }}",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          if (response.success) {
+            $j('#responseMessage')
+              .html('<div class="alert alert-success">' + response.message + '</div>');
+              window.location.href = response.redirect;
+            form.reset();
+          } else {
+            $j('#responseMessage')
+              .html('<div class="alert alert-danger">' + response.message + '</div>');
+          }
+          
+        },
+        error: function(xhr) {
+           let res = xhr.responseJSON;
+          if (res && res.errors) {
+            let messages = Object.values(res.errors).map(e => e[0]).join("<br>");
+            $j('#responseMessage')
+              .html('<div class="alert alert-danger">' + messages + '</div>');
+          } else {
+            $j('#responseMessage')
+              .html('<div class="alert alert-danger">An unexpected error occurred.</div>');
+          }
+           errorClass: "error"
+        }
+       
+      });
+
+      return false;
+    }
+  });
+});
+</script>
+
         <script>
           document.addEventListener("DOMContentLoaded", function () {
               const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -203,114 +281,9 @@
       commercialField.style.display = 'none';
     }
   });
-          $(document).ready(function () {
-            $(document).on('change', '#country', function () {
-              var cid = this.value; 
-
-           //   alert(cid)  //let cid = $(this).val(); we cal also write this.
-              $.ajax({
-                url: "{{url('/getstate')}}",
-                type: "POST",
-                datatype: "json",
-                data: {
-                  country_id: cid,
-                  '_token':'{{csrf_token()}}'
-                },
-                success: function(result) {
-                  $('#state').html('<option value="">Select State</option>');
-                  $.each(result.state, function(key, value) {
-                    $('#state').append('<option value="' +value.state_id+ '">' +value.state_name+ '</option>');
-                  });
-                },
-                errror: function(xhr) {
-                    console.log(xhr.responseText);
-                  }
-                });
-            });
-
-            $('#state').change(function () {
-              var sid = this.value;
-              $.ajax({
-                url: "{{url('/getcity')}}",
-                type: "POST",
-                datatype: "json",
-                data: {
-                  state_id: sid,
-                  '_token':'{{csrf_token()}}'
-                },
-                success: function(result) {
-                  console.log(result);
-                  $('#city').html('<option value="">Select City</option>');
-                  $.each(result.city, function(key, value) {
-                    $('#city').append('<option value="' +value.city_id+ '">' +value.city_name+ '</option>')
-                  });
-                },
-                errror: function(xhr) {
-                    console.log(xhr.responseText);
-                  }
-              });
-            });
-
-            $('#coach_type').change(function () {
-              var sid = this.value;
-            //  alert(sid)
-              $.ajax({
-                url: "{{url('/getsubType')}}",
-                type: "POST",
-                datatype: "json",
-                data: {
-                  coach_type_id: sid,
-                  '_token':'{{csrf_token()}}'
-                },
-                success: function(result) {
-                  console.log(result);
-                  $('#coach_subtype').html('<option value="">Select SubType</option>');
-                  $.each(result.city, function(key, value) {
-                    $('#coach_subtype').append('<option value="' +value.id+ '">' +value.subtype_name+ '</option>')
-                  });
-                },
-                errror: function(xhr) {
-                    console.log(xhr.responseText);
-                  }
-              });
-            });
-          });
+         
         </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const bio = document.getElementById('short_bio');
-                const counter = document.getElementById('bioCounter');
-                const max = 300;
-
-                function updateCounter() {
-                    const remaining = max - bio.value.length;
-                    counter.textContent = `${remaining} characters remaining`;
-                }
-
-                bio.addEventListener('input', updateCounter);
-                updateCounter(); // initial update
-            });
-        </script>
-        <script>
-          document.addEventListener('DOMContentLoaded', function () {
-              const select = document.querySelector('select[name="is_volunteered_coach"]');
-              const volCoachDiv = document.getElementById('vol_coach');
-
-              function toggleVolCoach() {
-                  if (select.value === '1') {
-                      volCoachDiv.style.display = 'block';
-                  } else {
-                      volCoachDiv.style.display = 'none';
-                  }
-              }
-
-              // Run on page load
-              toggleVolCoach();
-
-              // Run when the select changes
-              select.addEventListener('change', toggleVolCoach);
-          });
-      </script>
+       
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="{{ url('/public') }}/admin_assets/vendors/js/vendor.bundle.base.js"></script>

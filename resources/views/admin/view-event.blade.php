@@ -1,4 +1,4 @@
-@extends('business.layouts.layout')
+@extends('admin.layouts.layout')
 
 @section('content')
         <!-- partial -->
@@ -33,7 +33,7 @@
                 ?>
                 <div class="card">
                   <div class="card-body">
-                      <a href="{{route('interprise.event-list')}}" class="btn btn-outline-info btn-fw" style="float: right;">Event List</a>
+                      <a href="{{route('admin.event-list')}}" class="btn btn-outline-info btn-fw" style="float: right;">Event List</a>
                       <h4 class="card-title">Event Management</h4>
                       <!--p class="card-description"> Add / Update Blog  </p-->
 
@@ -55,7 +55,7 @@
                               <input type="hidden" name="event_id" value="{{$event_id}}">
                               <label for="exampleInputUsername1"><strong>Event Name : </strong> {{$event_name}}</label>
                             </div>
-                            @php
+                             @php
                           $eventTypeLabels = [
                               0 => 'Sports',
                               1 => 'Music',
@@ -79,9 +79,9 @@
                               <label for="exampleInputEmail1"><strong>Select Address: </strong>{{$address}}</label>
                             </div>
                             <div class="form-group col-md-6">
-                              <label for="exampleInputEmail1"><strong>Ticket Price : </strong> $ {{$price}}</label>
+                              <label for="exampleInputEmail1"><strong>Ticket Price : </strong>$ {{$price}}</label>
                             </div>
-                        @php
+                            @php
                             $days = is_string($event_days) ? json_decode($event_days, true) : $event_days;
                             $days = is_array($days) ? $days : [];
                         @endphp
@@ -95,7 +95,7 @@
                               
                             </div>
                             <div class="form-group col-md-6">
-                              <label for="exampleInputEmail1"><strong>Price per Ticket (₹) : </strong> $ {{$ticket_price}}</label>
+                              <label for="exampleInputEmail1"><strong>Price per Ticket (₹) : </strong>$  {{$ticket_price}}</label>
                             </div>
                              <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Start Time: </strong>{{$start_time}}</label>
@@ -104,7 +104,7 @@
                               <label for="exampleInputEmail1"><strong>End Time : </strong> {{$end_time}}</label>
                             </div>
                             <div class="form-group col-md-6">
-                              <label for="exampleInputEmail1"><strong>Event Duration : </strong> {{$duration}} Minute</label>
+                              <label for="exampleInputEmail1"><strong>Event Duration : </strong> {{$duration}}</label>
                               
                             </div>
                             <div class="form-group col-md-6">
@@ -112,10 +112,10 @@
                               
                             </div>
                             <div class="form-group col-md-6">
-                              <label for="exampleInputEmail1">
-                              <strong>Limit Events per Day:</strong>
-                              {{ $event_limit == 0 ? 'Only one event per day' : 'Multiple events per day' }}
-                          </label>
+                             <label for="exampleInputEmail1">
+                          <strong>Limit Events per Day:</strong>
+                          {{ $event_limit == 0 ? 'Only one event per day' : 'Multiple events per day' }}
+                      </label>
                               
                             </div>
 

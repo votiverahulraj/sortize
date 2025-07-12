@@ -25,6 +25,10 @@ use App\Http\Controllers\EventController;
 // Route::any('/', [BusinessController::class, 'signup'])->name('signup');
 //echo "hii";die;
 
+Route::get('/', function () {
+    return view('home');
+});
+
 Route::any('/admin', [AdminController::class, 'login'])->name('admin.login');
 Route::any('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 Route::post('/admin/getstate', [AdminController::class, 'getstate']);
@@ -41,17 +45,30 @@ Route::post('/getstate', [BusinessController::class, 'getstate']);
 Route::post('/getcity', [BusinessController::class, 'getcity']);
 Route::post('/getsubType', [BusinessController::class, 'getsubType']);
 
-Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
-Route::any('/dashboard/create-event', [BusinessController::class, 'createEvent'])->name('interprise.create-event');
-Route::any('/dashboard/create-event', [EventController::class, 'createEvent'])->name('interprise.create-event');
-Route::post('/add-event/{id?}', [EventController::class, 'addEvent'])->name('interprise.add-event');
-Route::get('/edit-event/{id?}', [EventController::class, 'editEvent'])->name('interprise.edit-event');
-Route::any('/dashboard/event-list', [EventController::class, 'eventList'])->name('interprise.event-list');
-Route::post('/delete_event', [EventController::class, 'delete'])->name('interprise.delete_event');
-Route::get('/view-event/{id?}', [EventController::class, 'viewEvent'])->name('interprise.view-event');
+Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(function () {
+    Route::any('/', [BusinessController::class, 'dashboard'])->name('dashboard');
+    Route::any('/create-event', [EventController::class, 'createEvent'])->name('create-event');
+    Route::post('/add-event/{id?}', [EventController::class, 'addEvent'])->name('add-event');
+    Route::get('/edit-event/{id?}', [EventController::class, 'editEvent'])->name('edit-event');
+    Route::any('/event-list', [EventController::class, 'eventList'])->name('event-list');
+    Route::get('/view-event/{id?}', [EventController::class, 'viewEvent'])->name('view-event');
+    Route::post('/delete_event', [EventController::class, 'delete'])->name('delete_event');
+    // Ticket routes
+    Route::any('/create-ticket', [BusinessController::class, 'createTicket'])->name('create-ticket');
+    Route::any('/ticket-list', [BusinessController::class, 'ticketList'])->name('ticket-list');
+});
 
-Route::any('/dashboard/create-ticket', [BusinessController::class, 'createTicket'])->name('interprise.create-ticket');
-Route::any('/dashboard/ticket-list', [BusinessController::class, 'ticketList'])->name('interprise.ticket-list');
+// Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
+// Route::any('/dashboard/create-event', [BusinessController::class, 'createEvent'])->name('interprise.create-event');
+// Route::any('/dashboard/create-event', [EventController::class, 'createEvent'])->name('interprise.create-event');
+// Route::post('/add-event/{id?}', [EventController::class, 'addEvent'])->name('interprise.add-event');
+// Route::get('/edit-event/{id?}', [EventController::class, 'editEvent'])->name('interprise.edit-event');
+// Route::any('/dashboard/event-list', [EventController::class, 'eventList'])->name('interprise.event-list');
+// Route::post('/delete_event', [EventController::class, 'delete'])->name('interprise.delete_event');
+// Route::get('/view-event/{id?}', [EventController::class, 'viewEvent'])->name('interprise.view-event');
+
+// Route::any('/dashboard/create-ticket', [BusinessController::class, 'createTicket'])->name('interprise.create-ticket');
+// Route::any('/dashboard/ticket-list', [BusinessController::class, 'ticketList'])->name('interprise.ticket-list');
 
 // Group all protected admin routes under middleware
 Route::middleware(['auth:admin', 'admin'])->group(function () {
@@ -138,6 +155,9 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/admin/viewReview/{id}', [ReviewController::class, 'viewReview'])->name('admin.viewReview');
     Route::post('/admin/status', [ReviewController::class, 'status'])->name('admin.status');
     Route::post('/admin/enquiry_status', [UserManagementController::class, 'enquiry_status']);
+
+      Route::any('/admin/event-list', [AdminController::class, 'eventList'])->name('admin.event-list');
+     Route::get('/admin/view-event/{id?}', [AdminController::class, 'viewEvent'])->name('admin.view-event');
 });
 
 

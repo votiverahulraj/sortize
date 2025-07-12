@@ -564,6 +564,65 @@ public function professional_title()
     return response()->json($response);
 }
 
+public function home_page()
+{
+    // echo "test";die;
+    $response = [
+        'status' => 0,
+        'message' => '',
+        'data' => null
+    ];
+
+    try {
+
+        $event_listing = DB::table('events')
+                        ->where('is_deleted','0')
+                        ->where('status','1')
+                        ->get();
+
+    foreach ($event_listing as $value) {
+
+        $top_event_images = DB::table('event_gallery_images')
+            ->where('event_id', $value->id)
+            ->pluck('event_media') // Fetch only the images
+            ->toArray(); // Convert to array for easy handling
+
+        // Add catalogue details to the list
+        // $showtopRatedProduct = [];
+            $showEventList[] = [
+                "event_id" => $value->id,
+                "user_id" => $value->user_id,
+                "event_name" => $value->event_name,
+                "date_time" => $value->date_time,
+                "address" => $value->address,
+                "event_days" => json_decode($value->event_days),
+                "ticket_quantity" => $value->ticket_quantity,
+                "ticket_price" => $value->ticket_price,
+                "start_time" => $value->start_time,
+                "duration" => $value->duration,
+                "description" => $value->description,
+                "end_time" => $value->end_time,
+                "latitude" => $value->latitude,
+                "longitude" => $value->longitude,
+                "event_media" => array_map(function ($image) {
+                    return url('public/upload/product_images/') . $image; // Append full URL
+                }, $top_event_images),
+            ];
+        }
+
+      
+            // print_r($showEventList);die;
+        $response['status'] = 1;
+        $response['message'] = 'Event listing';
+        $response['data'] = ['event_listing' => $showEventList];
+
+    } catch (\Exception $e) {
+        $response['message'] = 'An unexpected error occurred: ' . $e->getMessage();
+    }
+
+    return response()->json($response);
+}
+
     public function updateProfileImage(Request $request)
     {
         try {

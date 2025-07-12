@@ -51,29 +51,31 @@
                 </div>
               </div>
             </div>
-            <form class="add-evnt" method="POST" action="{{ route('interprise.add-event') }}" enctype="multipart/form-data">
+            <form class="add-evnt" id="eventForm" method="POST" action="{{ route('interprise.add-event') }}" enctype="multipart/form-data">
                 {!! csrf_field() !!}
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group">
                         <label for="exampleInputUsername1">Event Name</label>
                         <input type="hidden" name="event_id" value="{{$event_id}}">
-                        <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Type your event name" name="event_name" value="{{$event_name}}">
+                        <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Type your event name" name="event_name" value="{{$event_name}}" >
                         </div>
+                       
                     </div>
                     <div class="col-md-6">
                     <div class="form-group">
                         <label for="type-event">Event Type</label>
                         <select class="form-select" id="type-event" name="event_type">
-    <option disabled {{ $event_type === null ? 'selected' : '' }}>Choose...</option>
-    <option value="0" {{ $event_type == 0 ? 'selected' : '' }}>Sports</option>
-    <option value="1" {{ $event_type == 1 ? 'selected' : '' }}>Music</option>
-    <option value="2" {{ $event_type == 2 ? 'selected' : '' }}>Arts</option>
-    <option value="3" {{ $event_type == 3 ? 'selected' : '' }}>Conferences</option>
-    <option value="4" {{ $event_type == 4 ? 'selected' : '' }}>Fashion shows</option>
-    <option value="5" {{ $event_type == 5 ? 'selected' : '' }}>Festivals</option>
-</select>
+                        <option  {{ $event_type === null ? 'selected' : '' }}>Choose...</option>
+                        <option value="0" {{ $event_type == 0 ? 'selected' : '' }}>Sports</option>
+                        <option value="1" {{ $event_type == 1 ? 'selected' : '' }}>Music</option>
+                        <option value="2" {{ $event_type == 2 ? 'selected' : '' }}>Arts</option>
+                        <option value="3" {{ $event_type == 3 ? 'selected' : '' }}>Conferences</option>
+                        <option value="4" {{ $event_type == 4 ? 'selected' : '' }}>Fashion shows</option>
+                        <option value="5" {{ $event_type == 5 ? 'selected' : '' }}>Festivals</option>
+                    </select>
                         </div>
+                     
                         </div> 
                 </div>
 
@@ -83,6 +85,7 @@
                         <label for="event_datetime">Select Date & Time</label>
                         <input type="datetime-local" class="form-control" id="event_datetime" name="date_time" value="{{$date_time}}">
                     </div>
+
                 </div>
 
                     <div class="col-md-6">
@@ -93,6 +96,9 @@
                     </div>
                     
                 </div>
+
+                <input type="hidden" class="form-control" id="lat" name="lat" value="" readonly>
+                 <input type="hidden" class="form-control" id="exampleInputUsername1" name="long" value="" readonly>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -221,7 +227,7 @@
     <div class="col-md-6">
     <div class="form-group mb-3">
   <label for="" class="form-label">Attach Media</label>
-  <input type="file" class="form-control" id="inputGroupFile" name="media" multiple>
+  <input type="file" class="form-control" id="inputGroupFile" name="media" >
 
   @if (!empty($eventdetails->media))
             <div class="mt-2">
@@ -229,6 +235,24 @@
                 <img src="{{ asset('/public/' . $media) }}" alt="Media" class="img-thumbnail" style="max-width: 150px;">
             </div>
         @endif
+  <div id="fileList" class="mt-2 text-secondary small"></div>
+</div>
+                    </div>
+
+                     <div class="col-md-6">
+    <div class="form-group mb-3">
+  <label for="" class="form-label">Evenit Media</label>
+  <input type="file" class="form-control" id="inputGroupFile" name="event_media[]" multiple>
+
+ @if (!$eventgallery->isEmpty())
+    <div class="mt-2">
+        <label class="form-label">Previously Uploaded Media:</label><br>
+        @foreach ($eventgallery as $gallery)
+            <img src="{{ asset('public/' . $gallery->event_media) }}" alt="Media" class="img-thumbnail m-2" style="max-width: 150px;">
+        @endforeach
+    </div>
+@endif
+
   <div id="fileList" class="mt-2 text-secondary small"></div>
 </div>
                     </div>
@@ -245,3 +269,100 @@
             </form>
             
         @endsection
+       <!--  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ url('/public') }}/js/jquery.validate.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $("#eventForm").validate({
+        rules: {
+            event_name: {
+                required: true,
+                minlength: 3
+            },
+            event_type: {
+                required: true
+            },
+            date_time: {
+                required: true
+            },
+            address: {
+                required: true
+            },
+            price: {
+                required: true,
+                number: true,
+                min: 0
+            },
+            ticket_quantity: {
+                required: true,
+                number: true,
+                min: 1
+            },
+            ticket_price: {
+                required: true,
+                number: true,
+                min: 0
+            },
+            start_time: {
+                required: true
+            },
+            end_time: {
+                required: true
+            },
+            description: {
+                required: true,
+                minlength: 10
+            }
+        },
+        messages: {
+            event_name: {
+                required: "Please enter an event name",
+                minlength: "Event name must be at least 3 characters"
+            },
+            event_type: {
+                required: "Please select an event type"
+            },
+            date_time: {
+                required: "Please select date & time"
+            },
+            address: {
+                required: "Please enter address"
+            },
+            price: {
+                required: "Enter the ticket price",
+                number: "Price must be a number",
+                min: "Price cannot be negative"
+            },
+            ticket_quantity: {
+                required: "Enter ticket quantity",
+                number: "Quantity must be a number",
+                min: "Minimum 1 ticket required"
+            },
+            ticket_price: {
+                required: "Enter ticket price",
+                number: "Must be a number",
+                min: "Must be zero or more"
+            },
+            start_time: {
+                required: "Enter start time"
+            },
+            end_time: {
+                required: "Enter end time"
+            },
+            description: {
+                required: "Please enter a description",
+                minlength: "Minimum 10 characters required"
+            }
+        },
+        errorElement: 'span',
+        errorClass: 'text-danger',
+        highlight: function (element) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element) {
+            $(element).removeClass('is-invalid');
+        }
+    });
+});
+</script> -->

@@ -1,4 +1,4 @@
-@extends('business.layouts.layout')
+@extends('admin.layouts.layout')
 
 @section('content')
 <div class="main-panel">
@@ -72,9 +72,9 @@
     <td>{{ $event->address }}</td>
     <td>₹{{ $event->ticket_price }}</td>
     <td>
-       <a href="{{route('interprise.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a> 
+       <!-- <a href="{{route('interprise.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a>  -->
         <a href="javascript:void(0)" class="del_user" event_id="{{$event->id}}"><i class="mdi mdi-delete"></i></a>
-         <a href="{{route('interprise.view-event')}}/{{ $event->id }}"><i class="mdi mdi-eye"></i></a>
+         <a href="{{route('admin.view-event')}}/{{ $event->id }}"><i class="mdi mdi-eye"></i></a>
 
     </td>
 </tr>
