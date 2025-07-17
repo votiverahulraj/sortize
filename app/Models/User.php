@@ -23,21 +23,21 @@ class User extends Authenticatable
      * @var list<string>
      */
 
-    // protected $fillable = [
-    //     'first_name',
-    //     'email',
-    //     'password',
-    //     'contact_number',
-    //     'user_type',
-    //     'country_id',
-    //     'user_timezone',
-    //     'last_name',
-    //     'email_verification_token',
-    //     'professional_title',
-    //     'email_verified',
-    //     'is_deleted',
-    //     'student_certificate'
-    // ];
+    protected $fillable = [
+        'first_name',
+        'email',
+        'password',
+        'contact_number',
+        'user_type',
+        'country_id',
+        'user_timezone',
+        'last_name',
+        'email_verification_token',
+        'professional_title',
+        'email_verified',
+        'is_deleted',
+        'student_certificate'
+    ];
 
     //   protected $fillable = ['name', 'email', 'password'];
     /**

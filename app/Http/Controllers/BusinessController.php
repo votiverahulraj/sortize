@@ -143,8 +143,12 @@ class BusinessController extends Controller
 	public function dashboard(Request $request)
     {
        $userCount = DB::table('users')->where('user_type', '=', 3)->where('is_deleted', '=', 0)->count();
-      // dd($userCount);
-    	return view('business.dashboard', compact('userCount'));
+
+        $evenrCount = DB::table('events')->where('is_deleted', '=', 0)->count();
+
+        //dd($evenrCount);
+     
+    	return view('business.dashboard', compact('userCount','evenrCount'));
     }
 	
 	public function createEvent(Request $request)

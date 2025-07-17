@@ -7,7 +7,7 @@
             <div class="row">
               <div class="col-md-12 grid-margin stretch-card">
                <?php
-                  $event_name=$event_type=$address=$ticket_price=$ticket_quantity=$event_days=$start_time=$end_time=$duration=$gap=$event_limit=$description=$date_time=$media=$price="";
+                  $event_name=$event_type=$address=$ticket_price=$ticket_quantity=$event_days=$start_time=$end_time=$duration=$gap=$event_limit=$description=$date_time=$media=$price=$start_date=$end_date="";
                   $event_id="";
                 
                   if(!empty($eventdetails))
@@ -27,6 +27,8 @@
                     $event_limit=$eventdetails->event_limit;
                     $description=$eventdetails->description;
                     $date_time=$eventdetails->date_time;
+                    $start_date=$eventdetails->start_date;
+                    $end_date=$eventdetails->end_date;
                     $media=$eventdetails->media;
                    
                   }
@@ -34,7 +36,7 @@
                 <div class="card">
                   <div class="card-body">
                       <a href="{{route('interprise.event-list')}}" class="btn btn-outline-info btn-fw" style="float: right;">Event List</a>
-                      <h4 class="card-title">Event Management</h4>
+                      <h4 class="card-title">Event Management </h4>
                       <!--p class="card-description"> Add / Update Blog  </p-->
 
                     <!-- Nav tabs -->
@@ -43,12 +45,13 @@
                         <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Events</button>
                       </li>
                       <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button" role="tab" aria-controls="messages" aria-selected="false">Enquiry</button>
+                        <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button" role="tab" aria-controls="messages" aria-selected="false">Booking</button>
                       </li>
                      
                     </ul>
 
                     <div class="tab-content">
+                     @if($event_limit == '0')
                       <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
                           <div class="row">
                             <div class="form-group col-md-6">
@@ -72,8 +75,119 @@
                           </label>
                             </div>
                             <div class="form-group col-md-6">
-                              <label for="exampleInputEmail1"><strong>Select Date & Time : </strong>{{$date_time}}</label>
+                              <label for="exampleInputEmail1"><strong>Start Date: </strong>{{$start_date}}</label>
                             </div>
+
+                             <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>End Date: </strong>{{$end_date}}</label>
+                            </div>
+
+                             <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Select Address: </strong>{{$address}}</label>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Ticket Price : </strong> $ {{$price}}</label>
+                            </div> 
+                        <!-- @php
+                            $days = is_string($event_days) ? json_decode($event_days, true) : $event_days;
+                            $days = is_array($days) ? $days : [];
+                        @endphp
+                        <div class="form-group col-md-6">
+                        <label for="exampleInputEmail1">
+                            <strong>Select Event Days :</strong> {{ implode(', ', $days) }}
+                        </label>
+                        </div> -->
+                            <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>No. of Tickets : </strong> {{$ticket_quantity}}</label>
+                              
+                            </div>
+                           <!--  <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Price per Ticket (₹) : </strong> $ {{$ticket_price}}</label>
+                            </div> -->
+                             <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Start Time: </strong>{{$start_time}}</label>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>End Time : </strong> {{$end_time}}</label>
+                            </div>
+                            <!-- <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Event Duration : </strong> {{$duration}} Minute</label>
+                              
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Gap Between Events (in minutes, optional) : </strong> {{$gap}}</label>
+                              
+                            </div> -->
+                           <!--  <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1">
+                              <strong>Limit Events per Day:</strong>
+                              {{ $event_limit == 0 ? 'Only one event per day' : 'Multiple events per day' }}
+                          </label>
+                              
+                            </div> -->
+
+                            <!-- <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Attach Media : </strong></label>
+                              @if(!empty($media))
+                              <img src="{{ asset('public/' . $media)}}" style="max-width: 100px;max-height: 100px;">
+                              @endif
+                              
+                            </div> -->
+                            <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Photos : </strong></label>
+                            @if (!$eventgallery->isEmpty())
+    <div class="mt-2">
+    
+        @foreach ($eventgallery as $gallery)
+            <img src="{{ asset('public/' . $gallery->event_media) }}" alt="Media" class="img-thumbnail m-2" style="max-width: 150px;">
+        @endforeach
+    </div>
+@endif
+                              
+ </div>
+
+<!-- @if(isset($eventslot) && count($eventslot))
+    <div class="row mb-3">
+        <div class="col-md-6">
+              <label for="exampleInputEmail1"><strong>Generated Slots: </strong></label> 
+            <ul class="list-group">
+                @foreach($eventslot as $slot)
+                    <li class="list-group-item">
+                        {{ $slot->slot_start }} - {{ $slot->slot_end }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif -->
+                          </div>
+                      </div>
+            @else
+                       <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                          <div class="row">
+                            <div class="form-group col-md-6">
+                              <input type="hidden" name="event_id" value="{{$event_id}}">
+                              <label for="exampleInputUsername1"><strong>Event Name : </strong> {{$event_name}}</label>
+                            </div>
+                            @php
+                          $eventTypeLabels = [
+                              0 => 'Sports',
+                              1 => 'Music',
+                              2 => 'Arts',
+                              3 => 'Conferences',
+                              4 => 'Fashion shows',
+                              5 => 'Festivals',
+                          ];
+                      @endphp
+                            <div class="form-group col-md-6">
+                             <label for="exampleInputUsername1">
+                              <strong>Event Type :</strong>
+                              {{ $eventTypeLabels[$event_type] ?? 'N/A' }}
+                          </label>
+                            </div>
+                           <!--  <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Select Date & Time : </strong>{{$date_time}}</label>
+                            </div> -->
 
                              <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Select Address: </strong>{{$address}}</label>
@@ -94,9 +208,9 @@
                               <label for="exampleInputEmail1"><strong>No. of Tickets : </strong> {{$ticket_quantity}}</label>
                               
                             </div>
-                            <div class="form-group col-md-6">
+                           <!--  <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Price per Ticket (₹) : </strong> $ {{$ticket_price}}</label>
-                            </div>
+                            </div> -->
                              <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Start Time: </strong>{{$start_time}}</label>
                             </div>
@@ -119,15 +233,43 @@
                               
                             </div>
 
-                            <div class="form-group col-md-6">
+                            <!-- <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Attach Media : </strong></label>
                               @if(!empty($media))
                               <img src="{{ asset('public/' . $media)}}" style="max-width: 100px;max-height: 100px;">
                               @endif
                               
-                            </div>
+                            </div> -->
+                            <div class="form-group col-md-6">
+                              <label for="exampleInputEmail1"><strong>Photos : </strong></label>
+                            @if (!$eventgallery->isEmpty())
+    <div class="mt-2">
+    
+        @foreach ($eventgallery as $gallery)
+            <img src="{{ asset('public/' . $gallery->event_media) }}" alt="Media" class="img-thumbnail m-2" style="max-width: 150px;">
+        @endforeach
+    </div>
+@endif
+                              
+ </div>
+
+@if(isset($eventslot) && count($eventslot))
+    <div class="row mb-3">
+        <div class="col-md-6">
+              <label for="exampleInputEmail1"><strong>Generated Slots: </strong></label> 
+            <ul class="list-group">
+                @foreach($eventslot as $slot)
+                    <li class="list-group-item">
+                        {{ $slot->slot_start }} - {{ $slot->slot_end }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
                           </div>
                       </div>
+                      @endif
                       
                       
                       <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">

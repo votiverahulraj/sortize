@@ -1,4 +1,4 @@
-@extends('business.layouts.layout')
+@extends('admin.layouts.layout')
 
 @section('content')
 <div class="main-panel">
@@ -7,7 +7,7 @@
               <div class="col-md-12 grid-margin">
                 <div class="row">
                   <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                    <h3 class="font-weight-bold">Event List</h3>
+                    <h3 class="font-weight-bold">Slot List</h3>
                   </div>
                 </div>
               </div>
@@ -17,6 +17,12 @@
     <div class="alert alert-success" id="success-alert">
         {{ session()->get('success') }}
     </div>
+
+     @if (Session::has('error'))
+                      <div class="alert alert-danger">
+                          {{ Session::get('error') }}
+                      </div>
+                  @endif
 
     <script>
         setTimeout(function() {
@@ -30,73 +36,60 @@
     </script>
 @endif
 
-                <div class="row mb-3">
+<!--  <a href="{{route('admin.addSession')}}" 
+   class="btn btn-outline-info btn-fw" 
+   style="float: right; margin-top: -55px;">
+   Add Session
+</a> -->
+
+  <div class="row mb-3">
                     
   <div class="table-responsive">
     <table class="table table-bordered align-middle text-center">
       <thead class="table-dark">
         <tr>
-           <th scope="col">S No.</th>
-          <!-- <th scope="col">Event Image</th> -->
-          <th scope="col">Event Name</th>
-          <th scope="col">Event Type</th>
-          <th scope="col">Event Date & Time</th>
-          <th scope="col">Event Location</th>
-          <th scope="col">Event Price</th>
-           <th scope="col">Events Limit</th>
-          <th scope="col">Action</th>
-          <!-- <th scope="col">View S</th> -->
+          <th>S no.</th>
+         <th>Date</th>
+      <th>start time</th>
+       <th>end time</th>
+      <th>Capacity</th>
+      <th>Status</th>
+      <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <!-- 10 Sample Event Rows -->
-         @if($eventlist)
+         @if($sessionlist)
           @php $i=1; @endphp
-        @foreach($eventlist as $event)
-<tr>
-    <!-- <td>
-        <img src="{{ asset('/public/' . $event->media) }}" class="img-fluid rounded" alt="" style="width: 80px; height: 60px;">
-    </td> -->
-    <td>{{$i}}</td>
-    <td>{{ $event->event_name }}</td>
-    @php
-    $eventTypes = [
-        0 => 'Sports',
-        1 => 'Music',
-        2 => 'Arts',
-        3 => 'Conferences',
-        4 => 'Fashion shows',
-        5 => 'Festivals',
-    ];
-@endphp
-   <td>{{ $eventTypes[$event->event_type] ?? 'N/A' }}</td>
-    <td>
-        {{ \Carbon\Carbon::parse($event->date_time)->format('F d, Y - h:i A') }}
-    </td>
-    <td>{{ $event->address }}</td>
-    <td>₹{{ $event->price }}</td>
-    <td>
-   
-    @if($event->event_limit == 0)
-        single
-    @else
-        Recurrent Event
+       
+  @foreach($sessionlist as $session)
+      <tr>
+        <td>{{ $i++}}</td>
+        <td>{{ $session->date }}</td>
+        <td>{{ $session->start_time }}</td>
+        <td>{{ $session->end_time }}</td>
+        <td>
+          {{ $session->capacity }}
+        </td>
+        <td>
+        
+          <select class="session_status form-select form-select-sm" user="{{$session->id}}">
+          <option value="0" {{$session->is_active==0?'selected':''}}>InActive</option>
+          <option value="1" {{$session->is_active==1?'selected':''}}>Active </option>
+          </select>
+                              </td>
+        </td>
+        <td>
+ <a href="{{ route('admin.session.edit', ['id' => $session->id]) }}">
+    <i class="mdi mdi-lead-pencil"></i>
+</a>
+        </td>
+      </tr>
+    @endforeach
     @endif
-</td>
-    <td>
-       <a href="{{route('interprise.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a> 
-        <a href="javascript:void(0)" class="del_user" event_id="{{$event->id}}"><i class="mdi mdi-delete"></i></a>
-         <a href="{{route('interprise.view-event')}}/{{ $event->id }}"><i class="mdi mdi-eye"></i></a>
-
-    </td>
-</tr>
- @php $i++; @endphp
-@endforeach
-@endif
   </tbody>
     </table>     
                 <div class="d-flex add-pagination mt-4">
-                        {{ $eventlist->links('pagination::bootstrap-4') }}
+                        {{ $sessionlist->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
          </div>
@@ -159,5 +152,31 @@
                   });
                 }
               });
+
+              
+            });
+            $(document).on('change','.session_status',function(){
+              var status=$(this).val();
+              var session_id=$(this).attr('user');
+              $.ajax({
+                url: "{{url('/admin/session_status')}}",
+                type: "POST",
+                datatype: "json",
+                data: {
+                  status: status,
+                  user:session_id,
+                  '_token':'{{csrf_token()}}'
+                },
+                success: function(result) {
+                  Swal.fire({
+                    title: "Success!",
+                    text: "Status updated!",
+                    icon: "success"
+                  });
+                },
+                errror: function(xhr) {
+                    console.log(xhr.responseText);
+                  }
+                });
             });
         </script>

@@ -32,6 +32,7 @@ class EventController extends Controller
 
     public function addEvent(Request $request, $id = null)
 {
+   // dd($request->all());
     $user = Auth::user(); 
     $user_id = $user->id;
 
@@ -47,7 +48,8 @@ class EventController extends Controller
         $event->user_id = $user_id;
         $event->event_name = $request->event_name;
         $event->event_type = (int) $request->event_type;
-        $event->date = $request->date;
+        $event->start_date = $request->start_date;
+        $event->end_date = $request->end_date;
         $event->address = $request->address;
         $event->lat = $request->lat; 
         $event->long = $request->long; 
@@ -65,36 +67,14 @@ class EventController extends Controller
         $event->is_deleted = 0;
         $event->status = 0;
 
-        if ($request->hasFile('media')) {
-            $image = $request->file('media');
-            $imageName = 'event_' . time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/event'), $imageName);
-            $event->media = 'uploads/event/' . $imageName;
-        }
+        // if ($request->hasFile('media')) {
+        //     $image = $request->file('media');
+        //     $imageName = 'event_' . time() . '.' . $image->getClientOriginalExtension();
+        //     $image->move(public_path('uploads/event'), $imageName);
+        //     $event->media = 'uploads/event/' . $imageName;
+        // }
 
         $event->save();
-
-        if ($isUpdate) {
-            EventSlotModel::where('event_id', $event->id)->delete();
-        }
-
-        $start = Carbon::parse($request->start_time);
-        $end = Carbon::parse($request->end_time);
-        $duration = (int) $request->duration;
-        $buffer = (int) $request->gap;
-
-        while ($start->copy()->addMinutes($duration)->lte($end)) {
-            $slotStart = $start->copy();
-            $slotEnd = $start->copy()->addMinutes($duration);
-
-            EventSlotModel::create([
-                'event_id' => $event->id,
-                'slot_start' => $slotStart->format('H:i'),
-                'slot_end' => $slotEnd->format('H:i'),
-            ]);
-
-            $start->addMinutes($duration + $buffer);
-        }
 
         if ($request->hasFile('event_media')) {
             if ($isUpdate) {
@@ -112,6 +92,36 @@ class EventController extends Controller
             }
         }
 
+         if ($isUpdate) {
+            EventSlotModel::where('event_id', $event->id)->delete();
+        }
+
+        if ($event->event_limit == 1) {
+
+        $start = Carbon::parse($request->start_time);
+        $end = Carbon::parse($request->end_time);
+        $duration = (int) $request->duration;
+        $buffer = (int) $request->gap;
+
+        $slots = [];
+
+        while ($start->copy()->addMinutes($duration)->lte($end)) {
+            $slotStart = $start->copy();
+            $slotEnd = $start->copy()->addMinutes($duration);
+             // $slots[] = $current->format('h:i A') . ' – ' . $slotEnd->format('h:i A');
+             // $current->addMinutes($duration + $buffer);
+              // echo "hii";die;
+
+            EventSlotModel::create([
+                'event_id' => $event->id,
+                'slot_start' => $slotStart->format('H:i'),
+                'slot_end' => $slotEnd->format('H:i'),
+            ]);
+
+            $start->addMinutes($duration + $buffer);
+        }
+    }
+
         return redirect()->route('interprise.event-list')->with('success', $isUpdate ? 'Event updated successfully!' : 'Event created successfully!');
     }
 }
@@ -125,7 +135,7 @@ class EventController extends Controller
         $user = Auth::user();
         $user_id =  $user->id;
        // dd($user_id);
-        $eventlist = DB::table('events')->where('user_id', '=', $user_id)->where('is_deleted', '=', 0)->paginate(20);
+        $eventlist = DB::table('events')->where('user_id', '=', $user_id)->where('is_deleted', '=', 0)->orderBy('id', 'desc')->paginate(20);
 
         return view('business.event-list', compact('eventlist'));
     }
@@ -152,8 +162,10 @@ class EventController extends Controller
         $id = $request->id;
 
         $eventdetails = DB::table('events')->where('id', '=', $id)->where('is_deleted', '=', 0)->first();
-        //dd($eventdetails);
-         return view('business.view-event', compact('eventdetails'));
+        $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
+        $eventslot = DB::table('event_slot')->where('event_id', '=', $id)->get();
+
+         return view('business.view-event', compact('eventdetails','eventgallery','eventslot'));
 
     }
 

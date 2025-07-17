@@ -9,13 +9,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Session as SessionFacade;
+use App\Models\Session;
+use App\Models\Event;
+use App\Models\EventGalleryImage;
+use App\Models\EventSlotModel;
+
+
 
 class AdminController extends Controller
 {
     public function login(Request $request)
     {
-        // print_r('hello sortiz');die();
         if ($request->isMethod('post'))
         {
             //print_r(Auth::guard("admin")->attempt(["email" => $request->email,"password" => $request->password,'user_type'=>'1']));die();
@@ -37,7 +42,7 @@ class AdminController extends Controller
                 return redirect()->route("admin.dashboard");
             }else{
                 echo "Credentails do not matches our record.";
-                 Session::flash('message', "Credentails do not matches our record");
+                 SessionFacade::flash('message', "Credentails do not matches our record");
                 return redirect()->back()->withErros(["email" => "Credentails do not matches our record."]);
             }
         }
@@ -106,7 +111,7 @@ class AdminController extends Controller
 
      public function eventList(Request $request)
     {
-        $eventlist = DB::table('events')->where('is_deleted', '=', 0)->paginate(20);
+        $eventlist = DB::table('events')->where('is_deleted', '=', 0)->orderBy('id', 'desc')->paginate(20);
 
         return view('admin.event-list', compact('eventlist'));
     }
@@ -115,9 +120,315 @@ class AdminController extends Controller
         $id = $request->id;
 
         $eventdetails = DB::table('events')->where('id', '=', $id)->where('is_deleted', '=', 0)->first();
+         $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
+        $eventslot = DB::table('event_slot')->where('event_id', '=', $id)->get();
    
-         return view('admin.view-event', compact('eventdetails'));
+         return view('admin.view-event', compact('eventdetails','eventgallery','eventslot'));
 
+    }
+
+    public function updateEventStatus(Request $request)
+    {
+        $user = Event::find($request->user);
+        $user->status=$request->status;
+        $user->save();
+    }
+
+     public function addEvent()
+    {
+        $eventgallery = collect();
+        return view('admin.create-event',compact('eventgallery'));
+    }
+
+     public function createEvent(Request $request, $id = null)
+   {
+
+    // $user = Auth::user(); 
+    // $user_id = $user->id;
+
+    if ($request->isMethod('post')) {
+
+        $event = Event::find($request->event_id);
+        $isUpdate = $event ? true : false;
+
+        if (!$event) {
+            $event = new Event();
+        }
+
+        $event->user_id = 1;
+        $event->event_name = $request->event_name;
+        $event->event_type = (int) $request->event_type;
+        $event->start_date = $request->start_date;
+        $event->end_date = $request->end_date;
+        $event->address = $request->address;
+        $event->lat = $request->lat; 
+        $event->long = $request->long; 
+        $event->price = (int) $request->price;
+        $event->ticket_price = (int) $request->ticket_price;
+        $event->ticket_quantity = (int) $request->ticket_quantity;
+        $event->event_days = json_encode($request->event_days);
+        $event->start_time = $request->start_time;
+        $event->end_time = $request->end_time;
+        $event->duration = $request->duration;
+        $event->gap = $request->gap;
+        $event->event_limit = (int) $request->event_limit;
+        $event->description = $request->description;
+        $event->date_time = $request->date_time;
+        $event->is_deleted = 0;
+        $event->status = 0;
+
+        $event->save();
+
+        if ($request->hasFile('event_media')) {
+            if ($isUpdate) {
+                EventGalleryImage::where('event_id', $event->id)->delete();
+            }
+
+            foreach ($request->file('event_media') as $image) {
+                $imageName = 'event_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/event'), $imageName);
+
+                EventGalleryImage::create([
+                    'event_id' => $event->id,
+                    'event_media' => 'uploads/event/' . $imageName,
+                ]);
+            }
+        }
+
+         if ($isUpdate) {
+            EventSlotModel::where('event_id', $event->id)->delete();
+        }
+
+      if ($event->event_limit == 1) {
+    $eventId = $event->id;
+
+    $startTime = Carbon::parse($request->start_time);
+    $endTime   = Carbon::parse($request->end_time);
+    $duration  = (int) $request->duration;
+    $buffer    = (int) $request->gap;
+
+    $eventDayNames = is_array($request->event_days)
+        ? $request->event_days
+        : json_decode($request->event_days, true);
+
+    $dayNameToNumber = [
+        'Sunday'    => 0,
+        'Monday'    => 1,
+        'Tuesday'   => 2,
+        'Wednesday' => 3,
+        'Thursday'  => 4,
+        'Friday'    => 5,
+        'Saturday'  => 6,
+    ];
+
+    $eventDays = [];
+    foreach ($eventDayNames as $dayName) {
+        if (isset($dayNameToNumber[$dayName])) {
+            $eventDays[] = $dayNameToNumber[$dayName];
+        }
+    }
+
+    $startDate = Carbon::parse($event->start_date);
+    $endDate   = Carbon::parse($event->end_date);
+
+    for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+
+        if (in_array($date->dayOfWeek, $eventDays)) {
+            $dayStart = $date->copy()->setTimeFrom($startTime);
+            $dayEnd   = $date->copy()->setTimeFrom($endTime);
+
+            while ($dayStart->copy()->addMinutes($duration)->lte($dayEnd)) {
+
+                $slotStart = $dayStart->copy();
+                $slotEnd   = $slotStart->copy()->addMinutes($duration);
+
+                // $exists = EventSlotModel::where('event_id', $eventId)
+                //     ->where('slot_start', $slotStart->format('H:i'))
+                //     ->where('slot_end', $slotEnd->format('H:i'))
+                //     ->exists();
+
+                //     dd($exists);
+
+               // if (!$exists) {
+                    EventSlotModel::create([
+                        'event_id'   => $eventId,
+                        'slot_start' => $slotStart->format('H:i'),
+                        'slot_end'   => $slotEnd->format('H:i'),
+                    ]);
+              //  }
+
+                $dayStart->addMinutes($duration + $buffer);
+            }
+        }
+    }
+}
+
+
+        return redirect()->route('admin.event-list')->with('success', $isUpdate ? 'Event updated successfully!' : 'Event created successfully!');
+    }
+}
+
+ public function editEvent(Request $request)
+    {
+        $id = $request->id;
+
+        $eventdetails = DB::table('events')->where('id', '=', $id)->where('is_deleted', '=', 0)->first();
+
+        $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
+
+       // dd($eventgallery);
+       
+         return view('admin.create-event', compact('eventdetails','eventgallery'));
+
+    }
+
+     public function sessionList(Request $request, $id = null)
+    {
+         $eventId = $id;
+        $sessionlist = DB::table('session')->where('event_id', $eventId)->orderBy('id', 'asc')->paginate(20);
+
+        return view('admin.session-list', compact('sessionlist'));
+    }
+
+      public function addSession()
+    {
+         $events = DB::table('events')->where('is_deleted', '=', 0)->get();
+
+        return view('admin.create-session', compact('events'));
+    }
+
+  public function generateSessions(Request $request, $id = null)
+{
+    $eventId = $id;
+
+    $event = DB::table('events')->where('id', $eventId)->where('is_deleted', 0)->first();
+
+   $eventDayNames = json_decode($event->event_days, true);
+
+$dayNameToNumber = [
+    'Sunday' => 0,
+    'Monday' => 1,
+    'Tuesday' => 2,
+    'Wednesday' => 3,
+    'Thursday' => 4,
+    'Friday' => 5,
+    'Saturday' => 6,
+];
+
+
+$eventDays = [];
+ if (empty($eventDayNames)) {
+    return redirect()->back()->with('error', 'Event days not provided.');
+}
+
+foreach ($eventDayNames as $dayName) {
+    if (isset($dayNameToNumber[$dayName])) {
+        $eventDays[] = $dayNameToNumber[$dayName];
+    }
+}
+
+    $buffer = $event->gap;
+
+    if (!$event) {
+        return redirect()->back()->with('error', 'Event not found.');
+    }
+
+  $startDate = \Carbon\Carbon::parse($event->start_date);
+
+  $endDate = \Carbon\Carbon::parse($event->end_date);
+  //dd($endDate);
+  $weekendDates = [];
+
+ for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+
+    if (in_array($date->dayOfWeek, $eventDays)) {
+        $weekendDates[] = $date->format('Y-m-d');
+
+    }
+}
+
+    $intervalMinutes = !empty($event->duration) ? (int)$event->duration : 120;
+
+    $useCustomTimes = !empty($event->start_time) && !empty($event->end_time);
+
+    $timeSlots = [];
+
+    if ($useCustomTimes) {
+        $start = \Carbon\Carbon::createFromFormat('H:i:s', $event->start_time);
+        $end = \Carbon\Carbon::createFromFormat('H:i:s', $event->end_time);
+
+        while ($start->lt($end)) {
+            $slotStart = $start->copy();
+            $slotEnd = $slotStart->copy()->addMinutes($intervalMinutes);
+
+             if ($slotEnd->gt($end)) break;
+
+            $timeSlots[] = [
+                'start' => $slotStart->format('H:i:s'),
+                'end'   => $slotEnd->format('H:i:s'),
+            ];
+
+            $start->addMinutes($intervalMinutes+$buffer);
+        }
+    }
+
+//     if (!is_array($weekendDates) || !is_array($timeSlots)) {
+//     return redirect()->back()->with('error', 'Invalid data for session creation.');
+// }
+
+   foreach ($weekendDates as $date) {
+    foreach ($timeSlots as $slot) {
+        $exists = Session::where('event_id', $eventId)
+            ->where('date', $date)
+            ->where('start_time', $slot['start'])
+            ->where('end_time', $slot['end'])
+            ->exists();
+
+        if (!$exists) {
+            Session::create([
+                'event_id'   => $eventId,
+                'date'       => $date,
+                'start_time' => $slot['start'],
+                'end_time'   => $slot['end'],
+                'capacity'   => 50,
+                'is_active'  => 1,
+                'status'     => 0,
+            ]);
+        }
+    }
+}
+    return redirect()->route('admin.session-list', ['id' => $eventId])->with('success', 'Sessions generated successfully!');
+}
+
+public function edit($id)
+{
+    $session = Session::findOrFail($id);
+
+    $event = DB::table('session')->where('id', $session->id)->first();
+
+   $event_id =  $event->event_id;
+
+    return view('admin.create-session', compact('session','event_id'));
+}
+
+public function update(Request $request, $id)
+{
+$eventId = $request->event_id;
+    $session = Session::findOrFail($id);
+    $session->update([
+        'start_time' => $request->start_time,
+        'end_time' => $request->end_time,
+        'capacity' => $request->capacity,
+    ]);
+
+    return redirect()->route('admin.session-list',['id' => $eventId])->with('success', 'Session updated successfully!');
+}
+
+ public function session_status(Request $request)
+    {
+        $user = session::find($request->user);
+        $user->is_active=$request->is_active;
+        $user->save();
     }
 
 }

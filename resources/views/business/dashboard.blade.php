@@ -21,7 +21,7 @@
                     <div class="card card-tale">
                       <div class="card-body">
                         <p class="mb-4">Total Events</p>
-                        <p class="fs-30 mb-2">150</p>
+                        <p class="fs-30 mb-2">{{$evenrCount}}</p>
                       </div>
                     </div>
                   </div>
@@ -38,8 +38,8 @@
                     <div class="card card-light-danger">
                       <div class="card-body">
                         <p class="mb-4">Number of Users</p>
-                        <p class="fs-30 mb-2"></p>
-                        <p>0.22% (30 days)</p>
+                        <p class="fs-30 mb-2">{{$userCount}}</p>
+                        <p></p>
                       </div>
                     </div>
                   </div> 

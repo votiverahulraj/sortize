@@ -16,9 +16,12 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/forget_pwd', [UserController::class, 'forget_pwd']);
 Route::post('/verify_OTP', [UserController::class, 'verify_OTP']);
 Route::post('/resetPassword', [UserController::class, 'resetPassword']);
-Route::get('/suggested_user', [UserController::class, 'suggested_user']);
+Route::post('/suggested_user', [UserController::class, 'suggested_user']);
 Route::get('/professional_title', [UserController::class, 'professional_title']);
 Route::get('/home_page', [UserController::class, 'home_page']);
+Route::post('/friend_requests', [UserController::class, 'friend_requests']);
+Route::post('/pending_request_list', [UserController::class, 'pending_request_list']);
+Route::post('/accept_request_list', [UserController::class, 'accept_request_list']);
 
 
 Route::post('/coachlist', [AuthController::class, 'index']);

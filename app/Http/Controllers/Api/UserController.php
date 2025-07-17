@@ -499,9 +499,8 @@ public function resetPassword(Request $request)
     return response()->json($response);
 }
 
-public function suggested_user()
+public function suggested_user(Request $request)
 {
-    // echo "test";die;
     $response = [
         'status' => 0,
         'message' => '',
@@ -509,12 +508,34 @@ public function suggested_user()
     ];
 
     try {
+        $authUserId = $request->input('user_id'); // sender or logged-in user
+
+        // Subquery to get list of user IDs to exclude (blocked or declined)
+        $excludedUserIds = DB::table('friend_requests')
+            ->where(function ($query) use ($authUserId) {
+                $query->where('from_user_id', $authUserId)
+                      ->orWhere('to_user_id', $authUserId);
+            })
+            ->where(function ($query) {
+                $query->where('status','!=',3) // declined
+                      ->orWhere('is_blocked', 1); // blocked
+            })
+            ->pluck('from_user_id', 'to_user_id')
+            ->flatMap(function ($value, $key) {
+                return [$value, $key];
+            })
+            ->unique()
+            ->toArray();
+
+        // Fetch suggested users
         $user_details = DB::table('users')
             ->select('id', 'first_name', 'last_name', 'email', 'profile_image')
             ->where('user_status', 0)
             ->where('is_deleted', 0)
             ->where('user_type', 2)
             ->where('email_verified', 1)
+            ->where('id', '!=', $authUserId)
+            ->whereNotIn('id', $excludedUserIds)
             ->get()
             ->map(function ($user) {
                 $user->profile_image = $user->profile_image
@@ -523,7 +544,6 @@ public function suggested_user()
                 return $user;
             });
 
-            // print_r($user_details);die;
         $response['status'] = 1;
         $response['message'] = 'User Listing.';
         $response['data'] = ['user_list' => $user_details];
@@ -534,6 +554,215 @@ public function suggested_user()
 
     return response()->json($response);
 }
+
+
+public function friend_requests(Request $request)
+{
+    $response = [
+        'status' => 0,
+        'message' => '',
+    ];
+    $fromUserId = $request->input('from_user_id');
+    $toUserId = $request->input('to_user_id');
+
+    if (empty($fromUserId)) {
+        $response['errorcode'] = "40001";
+        $response['message'] = "Sender user ID (from_user_id) is required.";
+    } elseif (empty($toUserId)) {
+        $response['errorcode'] = "40002";
+        $response['message'] = "Receiver user ID (to_user_id) is required.";
+    } elseif ($fromUserId == $toUserId) {
+        $response['errorcode'] = "40003";
+        $response['message'] = "You cannot send a friend request to yourself.";
+    } else {
+        try {
+            $fromUser = User::find($fromUserId);
+            $toUser = User::find($toUserId);
+
+            if (!$fromUser || $fromUser->is_deleted) {
+                $response['errorcode'] = "40004";
+                $response['message'] = "Sender user not found.";
+            } elseif (!$toUser || $toUser->is_deleted) {
+                $response['errorcode'] = "40005";
+                $response['message'] = "Receiver user not found.";
+            } else {
+           
+                $isBlocked = DB::table('friend_requests')
+                    ->where(function ($query) use ($fromUserId, $toUserId) {
+                        $query->where(function ($q) use ($fromUserId, $toUserId) {
+                            $q->where('from_user_id', $fromUserId)
+                            ->where('to_user_id', $toUserId);
+                        })->orWhere(function ($q) use ($fromUserId, $toUserId) {
+                            $q->where('from_user_id', $toUserId)
+                            ->where('to_user_id', $fromUserId);
+                        });
+                    })
+                    ->where('is_blocked', 1)
+                    ->exists();
+
+                if ($isBlocked) {
+                    $response['errorcode'] = "40008";
+                    $response['message'] = "Cannot send request — user is blocked.";
+                    return response()->json($response);
+                }
+
+            
+                $existingRequest = DB::table('friend_requests')
+                    ->where(function ($query) use ($fromUserId, $toUserId) {
+                        $query->where('from_user_id', $fromUserId)->where('to_user_id', $toUserId);
+                    })->orWhere(function ($query) use ($fromUserId, $toUserId) {
+                        $query->where('from_user_id', $toUserId)->where('to_user_id', $fromUserId);
+                    })->first();
+
+                if ($existingRequest && $existingRequest->status == 1) {
+                    $response['errorcode'] = "40006";
+                    $response['message'] = "Friend request already sent or pending.";
+                } elseif ($existingRequest && $existingRequest->status == 2) {
+                    $response['errorcode'] = "40007";
+                    $response['message'] = "Users are already friends.";
+                }
+                   else {
+                  
+                        DB::table('friend_requests')->insert([
+                            'from_user_id' => $fromUserId,
+                            'to_user_id' => $toUserId,
+                            'status' => 1, 
+                            'is_blocked' => 2, 
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        $response['status'] = 1;
+                        $response['message'] = "Friend request sent successfully.";
+                    }
+                }
+            
+        } catch (\Exception $e) {
+            $response['errorcode'] = "50001";
+            $response['message'] = "An unexpected error occurred: " . $e->getMessage();
+        }
+    }
+
+    return response()->json($response);
+}
+
+public function pending_request_list(Request $request)
+{
+    $response = [
+        'status' => 0,
+        'message' => '',
+        'data' => null
+    ];
+
+    try {
+        $userId = $request->input('user_id');
+
+        if (empty($userId)) {
+            $response['errorcode'] = "40001";
+            $response['message'] = "User ID is required.";
+            return response()->json($response);
+        }
+
+        $is_user = User::find($userId);
+
+        if (!$is_user || $is_user->is_deleted) {
+            $response['errorcode'] = "40002";
+            $response['message'] = "User not found.";
+            return response()->json($response);
+        }
+
+        // Get pending friend requests
+        $pendingRequests = DB::table('friend_requests')
+            ->join('users', 'friend_requests.from_user_id', '=', 'users.id')
+            ->select('users.id', 'users.first_name', 'users.last_name', 'users.email', 'users.profile_image')
+            ->where('friend_requests.to_user_id', $userId)
+            ->where('friend_requests.status', 1) // Pending
+            ->where('friend_requests.is_blocked', 2) // 2 = unblocked
+            ->where('users.is_deleted', 0)
+            ->where('users.email_verified', 1)
+            ->get()
+            ->map(function ($user) {
+                $user->profile_image = $user->profile_image
+                    ? asset('public/uploads/profile_image/' . $user->profile_image)
+                    : null;
+                return $user;
+            });
+
+        if ($pendingRequests->isEmpty()) {
+            $response['errorcode'] = "40003";
+            $response['message'] = "There are no pending requests.";
+        } else {
+            $response['status'] = 1;
+            $response['message'] = "Pending friend requests.";
+            $response['data'] = ['pending_requests' => $pendingRequests];
+        }
+
+    } catch (\Exception $e) {
+        $response['message'] = "An unexpected error occurred: " . $e->getMessage();
+    }
+
+    return response()->json($response);
+}
+
+public function accept_request_list(Request $request)
+{
+    // echo "tstefe";die;
+    $response = [
+        'status' => 0,
+        'message' => '',
+        'data' => null
+    ];
+
+    try {
+        $userId = $request->input('user_id');
+
+        if (empty($userId)) {
+            $response['errorcode'] = "40001";
+            $response['message'] = "User ID is required.";
+            return response()->json($response);
+        }
+
+        $is_user = User::find($userId);
+
+        if (!$is_user || $is_user->is_deleted) {
+            $response['errorcode'] = "40002";
+            $response['message'] = "User not found.";
+            return response()->json($response);
+        }
+
+        // Get pending friend requests
+        $acceptRequests = DB::table('friend_requests')
+            ->join('users', 'friend_requests.from_user_id', '=', 'users.id')
+            ->select('users.id', 'users.first_name', 'users.last_name', 'users.email', 'users.profile_image')
+            ->where('friend_requests.to_user_id', $userId)
+            ->where('friend_requests.status', 2) // Pending
+            ->where('friend_requests.is_blocked', 2) // 2 = unblocked
+            ->where('users.is_deleted', 0)
+            ->where('users.email_verified', 1)
+            ->get()
+            ->map(function ($user) {
+                $user->profile_image = $user->profile_image
+                    ? asset('public/uploads/profile_image/' . $user->profile_image)
+                    : null;
+                return $user;
+            });
+
+        if ($acceptRequests->isEmpty()) {
+            $response['errorcode'] = "40003";
+            $response['message'] = "There are no request for accepting.";
+        } else {
+            $response['status'] = 1;
+            $response['message'] = "Pending friend requests.";
+            $response['data'] = ['accept_requests' => $acceptRequests];
+        }
+
+    } catch (\Exception $e) {
+        $response['message'] = "An unexpected error occurred: " . $e->getMessage();
+    }
+
+    return response()->json($response);
+}
+
 
 public function professional_title()
 {

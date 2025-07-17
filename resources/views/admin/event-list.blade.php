@@ -30,19 +30,29 @@
     </script>
 @endif
 
+ <a href="{{route('admin.addEvent')}}" 
+   class="btn btn-outline-info btn-fw" 
+   style="float: right; margin-top: -55px;">
+   Add Event
+</a>
+
                 <div class="row mb-3">
                     
   <div class="table-responsive">
     <table class="table table-bordered align-middle text-center">
       <thead class="table-dark">
         <tr>
-          <th scope="col">Event Image</th>
+           <th scope="col">S No</th>
+          <!-- <th scope="col">Event Image</th> -->
           <th scope="col">Event Name</th>
           <th scope="col">Event Type</th>
-          <th scope="col">Event Date & Time</th>
+          <!-- <th scope="col">Event Date & Time</th> -->
           <th scope="col">Event Location</th>
           <th scope="col">Event Price</th>
+           <th scope="col">Events Limit</th>
+           <th scope="col">Status</th>
           <th scope="col">Action</th>
+          <th scope="col">Manage Session</th>
         </tr>
       </thead>
       <tbody>
@@ -51,9 +61,10 @@
           @php $i=1; @endphp
         @foreach($eventlist as $event)
 <tr>
-    <td>
+  <td>{{$i}}</td>
+    <!-- <td>
         <img src="{{ asset('/public/' . $event->media) }}" class="img-fluid rounded" alt="" style="width: 80px; height: 60px;">
-    </td>
+    </td> -->
     <td>{{ $event->event_name }}</td>
     @php
     $eventTypes = [
@@ -66,17 +77,32 @@
     ];
 @endphp
    <td>{{ $eventTypes[$event->event_type] ?? 'N/A' }}</td>
-    <td>
+    <!-- <td>
         {{ \Carbon\Carbon::parse($event->date_time)->format('F d, Y - h:i A') }}
-    </td>
+    </td> -->
     <td>{{ $event->address }}</td>
-    <td>₹{{ $event->ticket_price }}</td>
+    <td>${{ $event->price }}</td>
+     <td>
+    @if($event->event_limit == 0)
+        single
+    @else
+        Recurrent Event
+    @endif
+</td>
+ <td>
+  <select class="event_status form-select form-select-sm" user="{{$event->id}}">
+                                  <option value="0" {{$event->status==0?'selected':''}}>Pending</option>
+                                  <option value="1" {{$event->status==1?'selected':''}}>Published </option>
+                                  <option value="2" {{$event->status==2?'selected':''}}>UnPublished</option>
+                                </select>
+                              </td>
     <td>
-       <!-- <a href="{{route('interprise.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a>  -->
+       <a href="{{route('admin.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a> 
         <a href="javascript:void(0)" class="del_user" event_id="{{$event->id}}"><i class="mdi mdi-delete"></i></a>
          <a href="{{route('admin.view-event')}}/{{ $event->id }}"><i class="mdi mdi-eye"></i></a>
 
     </td>
+    <td><a href="{{route('admin.generateSessions')}}/{{ $event->id }}">View Slot</a></td>
 </tr>
  @php $i++; @endphp
 @endforeach
@@ -147,5 +173,31 @@
                   });
                 }
               });
+
+              
+            });
+            $(document).on('change','.event_status',function(){
+              var status=$(this).val();
+              var event_id=$(this).attr('user');
+              $.ajax({
+                url: "{{url('/admin/event_update_status')}}",
+                type: "POST",
+                datatype: "json",
+                data: {
+                  status: status,
+                  user:event_id,
+                  '_token':'{{csrf_token()}}'
+                },
+                success: function(result) {
+                  Swal.fire({
+                    title: "Success!",
+                    text: "Status updated!",
+                    icon: "success"
+                  });
+                },
+                errror: function(xhr) {
+                    console.log(xhr.responseText);
+                  }
+                });
             });
         </script>

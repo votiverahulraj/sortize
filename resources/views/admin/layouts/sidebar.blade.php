@@ -54,6 +54,18 @@
         </ul>
       </div>
     </li>
+      <!--  <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+        <i class="icon-contract menu-icon"></i>
+        <span class="menu-title">Manage Session</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="icons">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="{{route('admin.session-list')}}">session List</a></li>
+        </ul>
+      </div>
+    </li> -->
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
         <i class="icon-bar-graph menu-icon"></i>
@@ -91,19 +103,8 @@
         </ul>
       </div>
     </li>
-    <!--<li class="nav-item">
-      <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
-        <i class="icon-contract menu-icon"></i>
-        <span class="menu-title">Icons</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="icons">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="pages/icons/mdi.html">Mdi icons</a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="nav-item">
+ 
+   <!-- <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
         <i class="icon-head menu-icon"></i>
         <span class="menu-title">User Pages</span>

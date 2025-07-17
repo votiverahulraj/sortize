@@ -1,4 +1,4 @@
-@extends('business.layouts.layout')
+@extends('admin.layouts.layout')
 
 @section('content')
  <style>
@@ -64,7 +64,7 @@
 <div id="oneEventFields" style="display: {{ old('event_limit', $event_limit ?? '') == '0' ? 'block' : 'none' }}; margin-top: 15px;">
     <p><strong>Only One Event Fields:</strong></p>
 
-     <form class="add-evnt" id="eventForm" method="POST" action="{{ route('interprise.add-event') }}" enctype="multipart/form-data">
+     <form class="add-evnt" id="eventForm" method="POST" action="{{ route('admin.createEvent') }}" enctype="multipart/form-data">
                 {!! csrf_field() !!}
 
                 <input type="hidden" name="event_limit" id="eventLimitOne" value="0">
@@ -111,13 +111,6 @@
 </div>
 
 </div>
-                   <!--  <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="event_datetime">Select Date & Time</label>
-                        <input type="datetime-local" class="form-control" id="event_datetime" name="date_time" value="{{$date_time}}">
-                    </div>
-
-                </div> -->
 
                  <div class="row mb-3">
 
@@ -197,7 +190,7 @@
 <div id="recurrentEventFields" style="display: {{ old('event_limit', $event_limit ?? '') == '1' ? 'block' : 'none' }}; margin-top: 15px;">
     <p><strong>Recurrent Event Fields:</strong></p>
 
-     <form class="add-evnt" id="eventForm" method="POST" action="{{ route('interprise.add-event') }}" enctype="multipart/form-data">
+     <form class="add-evnt" id="eventForm" method="POST" action="{{ route('admin.createEvent') }}" enctype="multipart/form-data">
                 {!! csrf_field() !!}
                <input type="hidden" name="event_limit" id="eventLimitRecurring" value="1">
                 <div class="row mb-3">
@@ -272,15 +265,8 @@
             </div>
         </div>
 
-                   <!--  <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="event_datetime">Select Date & Time</label>
-                        <input type="datetime-local" class="form-control" id="event_datetime" name="date_time" value="{{$date_time}}">
-                    </div> -->
-
                 </div>
-
-<div class="row mb-3">
+                     <div class="row mb-3">
 
 <div class="col-md-6">
     <div class="form-group">
@@ -374,41 +360,6 @@
               
 
      <div class="row mb-3">
-   <!-- <div class="col-md-6">
-    <label class="form-label">Limit Events per Day:</label>
-    <div class="d-flex gap-3">
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="event_limit" id="event_single" value="0"
-                {{ $event_limit == '0' ? 'checked' : '' }}>
-            <label class="form-check-label" for="event_single">
-                Only one event per day
-            </label>
-        </div>
-
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="event_limit" id="event_multiple" value="1"
-                {{ $event_limit == '1' ? 'checked' : '' }}>
-            <label class="form-check-label" for="event_multiple">
-                Multiple events per day
-            </label>
-        </div>
-    </div>
-</div> -->
-<!-- 
-    <div class="col-md-6">
-    <div class="form-group mb-3">
-  <label for="" class="form-label">Attach Media</label>
-  <input type="file" class="form-control" id="inputGroupFile" name="media" >
-
-  @if (!empty($eventdetails->media))
-            <div class="mt-2">
-                <label class="form-label">Previously Uploaded Media:</label><br>
-                <img src="{{ asset('/public/' . $media) }}" alt="Media" class="img-thumbnail" style="max-width: 150px;">
-            </div>
-        @endif
-  <div id="fileList" class="mt-2 text-secondary small"></div>
-</div>
-                    </div> -->
 
     <div class="col-md-6">
     <div class="form-group mb-3">

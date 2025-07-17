@@ -15,16 +15,6 @@ use App\Http\Controllers\EventController;
 //     return view('welcome');
 // });
 
-// Route::get('/test', function () {
-//     return 'Laravel is working test!';
-// });
-// Route::get('/', function () {
-//     return redirect()->route('signup');
-// });
-
-// Route::any('/', [BusinessController::class, 'signup'])->name('signup');
-//echo "hii";die;
-
 Route::get('/', function () {
     return view('home');
 });
@@ -156,8 +146,24 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::post('/admin/status', [ReviewController::class, 'status'])->name('admin.status');
     Route::post('/admin/enquiry_status', [UserManagementController::class, 'enquiry_status']);
 
+    // event start //
+      Route::any('/admin/addEvent/{id?}', [AdminController::class, 'addEvent'])->name('admin.addEvent');
+      Route::post('/admin/createEvent/{id?}', [AdminController::class, 'createEvent'])->name('admin.createEvent');
       Route::any('/admin/event-list', [AdminController::class, 'eventList'])->name('admin.event-list');
-     Route::get('/admin/view-event/{id?}', [AdminController::class, 'viewEvent'])->name('admin.view-event');
+      Route::get('/admin/edit-event/{id?}', [AdminController::class, 'editEvent'])->name('admin.edit-event');
+      Route::get('/admin/view-event/{id?}', [AdminController::class, 'viewEvent'])->name('admin.view-event');
+      Route::post('/admin/event_update_status', [AdminController::class, 'updateEventStatus']);
+
+      //session start//
+
+       Route::any('/admin/session-list/{id?}', [AdminController::class, 'sessionList'])->name('admin.session-list');
+
+        Route::any('/admin/addSession/{id?}', [AdminController::class, 'addSession'])->name('admin.addSession');
+      Route::any('/admin/generateSessions/{id?}', [AdminController::class, 'generateSessions'])->name('admin.generateSessions');
+      Route::get('/admin/edit-session/{id}', [AdminController::class, 'edit'])->name('admin.session.edit');
+     Route::post('/admin/updateSession/{id}', [AdminController::class, 'update'])->name('admin.updateSession');
+     Route::post('/admin/session_status', [AdminController::class, 'session_status']);
+
 });
 
 
