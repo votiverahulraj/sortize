@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable 
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
 
@@ -126,15 +126,5 @@ class User extends Authenticatable
     public function enquiries()
     {
         return $this->hasMany(MasterEnquiry::class, 'user_id');
-    }
-
-    // public function reviews()
-    // {
-    //     return $this->hasMany(Review::class, 'id', 'coach_id');
-    // }
-
-    public function reviews()
-    {
-        return $this->hasMany(Review::class, 'coach_id', 'id');
     }
 }
