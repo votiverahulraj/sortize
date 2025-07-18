@@ -3,26 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Event;
-use App\Models\Otp;
 use App\Models\User;
-use DB;
+use App\Models\Otp;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+use DB;
 
 
 
 class UserController extends Controller
 {
 
-
+    
 public function register(Request $request)
 {
     // echo "<pre>";print_r($request->all());die;
@@ -88,7 +87,7 @@ public function register(Request $request)
                     $image = $request->file('certificate');
                     $imageName = "stu" . time() . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('/uploads/student_certificate'), $imageName);
-                }
+                } 
                 $user = User::create([
                     'first_name' => $data_post['first_name'],
                     'last_name' => $data_post['last_name'],
@@ -278,7 +277,7 @@ public function forget_pwd(Request $request)
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
                     'otp' => $otpCode,
-
+                
                 ];
                 Mail::send('emails.forgot_pwd', $emailData, function ($message) use ($emailId) {
                     $message->to($emailId)
@@ -342,7 +341,7 @@ public function verify_OTP(Request $request)
     } elseif (empty($data_post['otp'])) {
         $response['errorcode'] = "20002";
         $response['message'] = "Otp: Required parameter missing";
-    }
+    } 
     // elseif (empty($data_post['from'])) {
     //     $response['errorcode'] = "20003";
     //     $response['message'] = "From: Required parameter missing";
@@ -432,7 +431,7 @@ public function verify_OTP(Request $request)
         }
     }
 
-
+   
     return response()->json($response);
 }
 
@@ -587,7 +586,7 @@ public function friend_requests(Request $request)
                 $response['errorcode'] = "40005";
                 $response['message'] = "Receiver user not found.";
             } else {
-
+           
                 $isBlocked = DB::table('friend_requests')
                     ->where(function ($query) use ($fromUserId, $toUserId) {
                         $query->where(function ($q) use ($fromUserId, $toUserId) {
@@ -607,7 +606,7 @@ public function friend_requests(Request $request)
                     return response()->json($response);
                 }
 
-
+            
                 $existingRequest = DB::table('friend_requests')
                     ->where(function ($query) use ($fromUserId, $toUserId) {
                         $query->where('from_user_id', $fromUserId)->where('to_user_id', $toUserId);
@@ -623,12 +622,12 @@ public function friend_requests(Request $request)
                     $response['message'] = "Users are already friends.";
                 }
                    else {
-
+                  
                         DB::table('friend_requests')->insert([
                             'from_user_id' => $fromUserId,
                             'to_user_id' => $toUserId,
-                            'status' => 1,
-                            'is_blocked' => 2,
+                            'status' => 1, 
+                            'is_blocked' => 2, 
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]);
@@ -637,7 +636,7 @@ public function friend_requests(Request $request)
                         $response['message'] = "Friend request sent successfully.";
                     }
                 }
-
+            
         } catch (\Exception $e) {
             $response['errorcode'] = "50001";
             $response['message'] = "An unexpected error occurred: " . $e->getMessage();
@@ -781,7 +780,7 @@ public function professional_title()
                                 ->where('is_deleted','0')
                                 ->where('is_active','1')
                                 ->get();
-
+      
             // print_r($user_details);die;
         $response['status'] = 1;
         $response['message'] = 'professional title listing';
@@ -794,157 +793,64 @@ public function professional_title()
     return response()->json($response);
 }
 
-// public function home_page()
-// {
-//     // echo "test";die;
-//     $response = [
-//         'status' => 0,
-//         'message' => '',
-//         'data' => null
-//     ];
+public function home_page()
+{
+    // echo "test";die;
+    $response = [
+        'status' => 0,
+        'message' => '',
+        'data' => null
+    ];
 
-//     try {
+    try {
 
-//         $event_listing = DB::table('events')
-//                         ->where('is_deleted','0')
-//                         ->where('status','1')
-//                         ->get();
+        $event_listing = DB::table('events')
+                        ->where('is_deleted','0')
+                        ->where('status','1')
+                        ->get();
 
-//     foreach ($event_listing as $value) {
+    foreach ($event_listing as $value) {
 
-//         $top_event_images = DB::table('event_gallery_images')
-//             ->where('event_id', $value->id)
-//             ->pluck('event_media') // Fetch only the images
-//             ->toArray(); // Convert to array for easy handling
+        $top_event_images = DB::table('event_gallery_images')
+            ->where('event_id', $value->id)
+            ->pluck('event_media') // Fetch only the images
+            ->toArray(); // Convert to array for easy handling
 
-//         // Add catalogue details to the list
-//         // $showtopRatedProduct = [];
-//             $showEventList[] = [
-//                 "event_id" => $value->id,
-//                 "user_id" => $value->user_id,
-//                 "event_name" => $value->event_name,
-//                 "date_time" => $value->date_time,
-//                 "address" => $value->address,
-//                 "event_days" => json_decode($value->event_days),
-//                 "ticket_quantity" => $value->ticket_quantity,
-//                 "ticket_price" => $value->ticket_price,
-//                 "start_time" => $value->start_time,
-//                 "duration" => $value->duration,
-//                 "description" => $value->description,
-//                 "end_time" => $value->end_time,
-//                 "latitude" => $value->latitude,
-//                 "longitude" => $value->longitude,
-//                 "event_media" => array_map(function ($image) {
-//                     return url('public/upload/product_images/') . $image; // Append full URL
-//                 }, $top_event_images),
-//             ];
-//         }
-
-
-//             // print_r($showEventList);die;
-//         $response['status'] = 1;
-//         $response['message'] = 'Event listing';
-//         $response['data'] = ['event_listing' => $showEventList];
-
-//     } catch (\Exception $e) {
-//         $response['message'] = 'An unexpected error occurred: ' . $e->getMessage();
-//     }
-
-//     return response()->json($response);
-// }
-
-
-    public function event_list()
-    {
-        $response = [
-            'status' => 0,
-            'message' => '',
-            'data' => null
-        ];
-
-        try {
-           $events = Event::with([
-                        'coach',
-                        'reviews',
-                        'coach.reviews.user',
-                    ])
-                    ->where('is_deleted', '0')
-                    ->where('status', '1')
-                    ->get();
-
-
-            $eventList = [];
-
-            foreach ($events as $event) {
-                // Get event gallery images
-                $eventImages = DB::table('event_gallery_images')
-                    ->where('event_id', $event->id)
-                    ->pluck('event_media')
-                    ->map(function ($image) {
-                        return url('public/' . $image);
-                    })
-                    ->toArray();
-
-                $coachDetails = $event->coach ? [
-                    'coach_id' => $event->coach->id,
-                    'first_name' => $event->coach->first_name ?? '',
-                    'last_name' => $event->coach->last_name ?? '',
-                    'profile_image' => url('public/uploads/profile_image/' . $event->coach->profile_image) ?? '',
-                    'review_avg_rating' => number_format($event->coach->reviews->avg('rating'), 2) ?? '',
-                    'reviews' => $event->coach->reviews->map(function ($review) {
-                        return [
-                            'review_id' => $review->id ?? '',
-                            'user_id'   => $review->user_id ?? '',
-                            'user_name' => optional($review->user)->first_name . ' ' . optional($review->user)->last_name ?? '',
-                            'profile_image' => $review->user && $review->user->profile_image
-                                ? url('public/uploads/profile_image/' . $review->user->profile_image)
-                                : '',
-                            'rating'    => $review->rating ?? '',
-                            'comment'   => $review->comment ?? '',
-                            'created_at'=> $review->created_at->format('Y-m-d H:i:s') ?? '',
-                        ];
-                    }),
-
-                ] : null;
-
-
-
-                // Build the event data
-                $eventList[] = [
-                    'event_id'        => $event->id,
-                    'user_id'         => $event->user_id, // optional if you have many users
-                    'event_name'      => $event->event_name ?? '',
-                    'ticket_price'    => $event->ticket_price ?? '',
-                    'start_date'      => $event->start_date ?? '',
-                    'end_date'        => $event->end_date ?? '',
-                    'address'         => $event->address ?? '',
-                    'start_time'      => $event->start_time ?? '',
-                    'end_time'        => $event->end_time ?? '',
-                    //'date_time'     => $event->date_time,
-                    'event_days'      => json_decode($event->event_days) ?? [],
-                    'ticket_quantity' => $event->ticket_quantity ?? '',
-                    'duration'        => $event->duration ?? '',
-                    'description'     => $event->description ?? '',
-                    'latitude'        => $event->latitude ?? '',
-                    'longitude'       => $event->longitude ?? '',
-                    'event_media'     => $eventImages ?? '',
-                    'organizer'       => $coachDetails ?? '',
-                ];
-            }
-
-            // Final response
-            $response['status'] = 1;
-            $response['message'] = 'Event listing';
-            $response['data'] = ['event_listing' => $eventList];
-
-        } catch (\Exception $e) {
-            $response['message'] = 'An unexpected error occurred: ' . $e->getMessage();
+        // Add catalogue details to the list
+        // $showtopRatedProduct = [];
+            $showEventList[] = [
+                "event_id" => $value->id,
+                "user_id" => $value->user_id,
+                "event_name" => $value->event_name,
+                "date_time" => $value->date_time,
+                "address" => $value->address,
+                "event_days" => json_decode($value->event_days),
+                "ticket_quantity" => $value->ticket_quantity,
+                "ticket_price" => $value->ticket_price,
+                "start_time" => $value->start_time,
+                "duration" => $value->duration,
+                "description" => $value->description,
+                "end_time" => $value->end_time,
+                "latitude" => $value->latitude,
+                "longitude" => $value->longitude,
+                "event_media" => array_map(function ($image) {
+                    return url('public/upload/product_images/') . $image; // Append full URL
+                }, $top_event_images),
+            ];
         }
 
-        return response()->json($response);
+      
+            // print_r($showEventList);die;
+        $response['status'] = 1;
+        $response['message'] = 'Event listing';
+        $response['data'] = ['event_listing' => $showEventList];
+
+    } catch (\Exception $e) {
+        $response['message'] = 'An unexpected error occurred: ' . $e->getMessage();
     }
 
-
+    return response()->json($response);
+}
 
     public function updateProfileImage(Request $request)
     {
