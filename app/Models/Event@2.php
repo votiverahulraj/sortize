@@ -13,9 +13,9 @@ class Event extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function event_reviews()
+    public function reviews()
     {
-        return $this->hasMany(Review::class, 'event_id', 'id');
+        return $this->hasMany(Review::class, 'user_id', 'id');
     }
 
 

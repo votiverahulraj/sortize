@@ -865,8 +865,8 @@ public function professional_title()
         try {
            $events = Event::with([
                         'coach',
-                        'event_reviews',
-                        'coach.event_reviews.user',
+                        'reviews',
+                        'coach.reviews.user',
                     ])
                     ->where('is_deleted', '0')
                     ->where('status', '1')
@@ -890,6 +890,20 @@ public function professional_title()
                     'first_name' => $event->coach->first_name ?? '',
                     'last_name' => $event->coach->last_name ?? '',
                     'profile_image' => url('public/uploads/profile_image/' . $event->coach->profile_image) ?? '',
+                    'review_avg_rating' => number_format($event->coach->reviews->avg('rating'), 2) ?? '',
+                    'reviews' => $event->coach->reviews->map(function ($review) {
+                        return [
+                            'review_id' => $review->id ?? '',
+                            'user_id'   => $review->user_id ?? '',
+                            'user_name' => optional($review->user)->first_name . ' ' . optional($review->user)->last_name ?? '',
+                            'profile_image' => $review->user && $review->user->profile_image
+                                ? url('public/uploads/profile_image/' . $review->user->profile_image)
+                                : '',
+                            'rating'    => $review->rating ?? '',
+                            'comment'   => $review->comment ?? '',
+                            'created_at'=> $review->created_at->format('Y-m-d H:i:s') ?? '',
+                        ];
+                    }),
 
                 ] : null;
 
@@ -913,22 +927,8 @@ public function professional_title()
                     'description'     => $event->description ?? '',
                     'latitude'        => $event->latitude ?? '',
                     'longitude'       => $event->longitude ?? '',
-                    'event_media'     => $eventImages ?? [],
+                    'event_media'     => $eventImages ?? '',
                     'organizer'       => $coachDetails ?? '',
-                    'review_avg_rating' => number_format($event->event_reviews->avg('rating'), 2) ?? '',
-                    'event_reviews' => $event->event_reviews->map(function ($review) {
-                        return [
-                            'review_id' => $review->id ?? '',
-                            'user_id'   => $review->user_id ?? '',
-                            'user_name' => optional($review->user)->first_name . ' ' . optional($review->user)->last_name ?? '',
-                            'profile_image' => $review->user && $review->user->profile_image
-                                ? url('public/uploads/profile_image/' . $review->user->profile_image)
-                                : '',
-                            'rating'    => $review->rating ?? '',
-                            'comment'   => $review->comment ?? '',
-                            'created_at'=> $review->created_at->format('Y-m-d H:i:s') ?? '',
-                        ];
-                    }),
                 ];
             }
 
