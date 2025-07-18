@@ -12,7 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Deploy via SSH using the private key stored in repo secrets
+      # Optional: Test SSH connection
+      - name: Test SSH Connection
+        run: |
+          ssh -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
+              -p ${{ secrets.PORT }} \
+              ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
+              "echo Connected successfully"
+
+      # Deploy using appleboy action
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
