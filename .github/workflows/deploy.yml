@@ -1,6 +1,5 @@
 name: Deploy
 
-# Trigger the workflow on push and pull request events on the main branch
 on:
   push:
     branches: ["main"]
@@ -10,10 +9,20 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # ✅ Step 1: Test SSH Connection (optional but fixed)
       - name: Test SSH Connection
-        run: ssh -i ${{ secrets.SSHKEY }} -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo 'SSH connection successful'"
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSHKEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo 'SSH connection successful'"
+
+      # ✅ Step 2: Deploy using appleboy/ssh-action
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -21,4 +30,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSHKEY }}
-          script: "cd /var/www/vhosts/votivereact.in/sortize.votivereact.in && ./.scripts/deploy.sh"
+          script: |
+            cd /var/www/vhosts/votivereact.in/sortize.votivereact.in
+            chmod +x ./.scripts/deploy.sh
+            ./.scripts/deploy.sh
