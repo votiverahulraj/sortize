@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Otp;
-use App\Models\Review;
 use App\Models\User;
 use DB;
 use Illuminate\Http\Request;
@@ -866,10 +865,8 @@ public function professional_title()
         try {
            $events = Event::with([
                         'coach',
-                        'event_slots',
-                        'joind_members.user',
-                        'event_reviews',
-                        'coach.event_reviews',
+                        'reviews',
+                        'coach.reviews.user',
                     ])
                     ->where('is_deleted', '0')
                     ->where('status', '1')
@@ -884,64 +881,32 @@ public function professional_title()
                     ->where('event_id', $event->id)
                     ->pluck('event_media')
                     ->map(function ($image) {
-                        return url('public/' . $image);
+                        return url('public/upload/product_images/' . $image);
                     })
                     ->toArray();
 
-                // Events slots shows
-                $EventSlots = [];
-                if ($event->event_slots && $event->event_slots->count() > 0) {
-                    foreach ($event->event_slots as $slot) {
-                        $EventSlots[] = [
-                            'id' => $slot->id,
-                            'event_id' => $slot->event_id,
-                            'slot_start' => $slot->slot_start,
-                            'slot_end' => $slot->slot_end,
-                        ];
-                    }
-                }
-
-                // Joined members shows
-                $JoinedMembers = [];
-
-                if ($event->joind_members && $event->joind_members->count() > 0) {
-                    foreach ($event->joind_members as $member) {
-                        $JoinedMembers[] = [
-                            'id' => $member->id,
-                            'user_id' => $member->user_id,
-                            'event_id' => $member->event_id,
-                            'first_name' => $member->user->first_name ?? '',
-                            'last_name' => $member->user->last_name ?? '',
-                            'profile_image' => $member->user && $member->user->profile_image
-                                        ? url('public/uploads/profile_image/' . $member->user->profile_image)
-                                        : '',
-                        ];
-                    }
-                }
-
-
-                // Organizer details show
                 $coachDetails = $event->coach ? [
                     'coach_id' => $event->coach->id,
                     'first_name' => $event->coach->first_name ?? '',
                     'last_name' => $event->coach->last_name ?? '',
-                    'contact_number' => $event->coach->contact_number ?? '',
-                    'profile_image' => $event->coach && $event->coach->profile_image
-                                        ? url('public/uploads/profile_image/' . $event->coach->profile_image)
-                                        : '',
-                ] : '';
+                    'profile_image' => url('public/uploads/profile_image/' . $event->coach->profile_image) ?? '',
+                    'review_avg_rating' => number_format($event->coach->reviews->avg('rating'), 2) ?? '',
+                    'reviews' => $event->coach->reviews->map(function ($review) {
+                        return [
+                            'review_id' => $review->id ?? '',
+                            'user_id'   => $review->user_id ?? '',
+                            'user_name' => optional($review->user)->first_name . ' ' . optional($review->user)->last_name ?? '',
+                            'profile_image' => $review->user && $review->user->profile_image
+                                ? url('public/uploads/profile_image/' . $review->user->profile_image)
+                                : '',
+                            'rating'    => $review->rating ?? '',
+                            'comment'   => $review->comment ?? '',
+                            'created_at'=> $review->created_at->format('Y-m-d H:i:s') ?? '',
+                        ];
+                    }),
 
+                ] : null;
 
-                // Get coach ID from the event
-                // $coachId = $event->coach ? $event->coach->id : null;
-                // // Get average rating from reviews table for this coach
-                // $averageRating = $coachId ? Review::where('coach_id', $coachId)->avg('rating') : null;
-
-                // Average rating showing of coach
-                $coach = $event->coach;
-                $averageRating = $coach && $coach->event_reviews->count() > 0
-                        ? round($coach->event_reviews->avg('rating'), 1)
-                        : null;
 
 
                 // Build the event data
@@ -956,31 +921,14 @@ public function professional_title()
                     'start_time'      => $event->start_time ?? '',
                     'end_time'        => $event->end_time ?? '',
                     //'date_time'     => $event->date_time,
-                    'event_days'      => json_decode($event->event_days) ?? [],
+                    'event_days'      => json_decode($event->event_days) ?? '',
                     'ticket_quantity' => $event->ticket_quantity ?? '',
                     'duration'        => $event->duration ?? '',
                     'description'     => $event->description ?? '',
                     'latitude'        => $event->latitude ?? '',
                     'longitude'       => $event->longitude ?? '',
-                    'event_media'     => $eventImages ?? [],
+                    'event_media'     => $eventImages ?? '',
                     'organizer'       => $coachDetails ?? '',
-                    'review_avg_rating' => $averageRating ? number_format($averageRating, 2) : '',
-                    'event_reviews' => $event->event_reviews->map(function ($review) {
-                        return [
-                            'review_id' => $review->id ?? '',
-                            'user_id'   => $review->user_id ?? '',
-                            'user_name' => optional($review->user)->first_name . ' ' . optional($review->user)->last_name ?? '',
-                            'profile_image' => $review->user && $review->user->profile_image
-                                ? url('public/uploads/profile_image/' . $review->user->profile_image)
-                                : '',
-                            'rating'    => $review->rating ?? '',
-                            'comment'   => $review->comment ?? '',
-                            'created_at'=> $review->created_at->format('Y-m-d H:i:s') ?? '',
-                        ];
-                    }),
-                    'event_slots' => $EventSlots,
-                    'joined_members' => $JoinedMembers,
-                    'joined_members_count' => count($JoinedMembers),
                 ];
             }
 
