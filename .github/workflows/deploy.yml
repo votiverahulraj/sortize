@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Test SSH Connection
-        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/coachsparkle-rsa -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected"
+        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected"
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
