@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\EventGalleryImage;
 use Carbon\Carbon;
 use App\Models\EventSlotModel;
+use App\Models\Session;
 
 class EventController extends Controller
 {
@@ -24,117 +25,117 @@ class EventController extends Controller
 
     public function createEvent(Request $request)
     {
-       $userCount = DB::table('users')->where('user_type', '=', 3)->where('is_deleted', '=', 0)->count();
-       $eventgallery = collect();
-        return view('business.create-event', compact('userCount','eventgallery'));
+        $userCount = DB::table('users')->where('user_type', '=', 3)->where('is_deleted', '=', 0)->count();
+        $eventgallery = collect();
+        return view('business.create-event', compact('userCount', 'eventgallery'));
     }
 
 
     public function addEvent(Request $request, $id = null)
-{
-   // dd($request->all());
-    $user = Auth::user(); 
-    $user_id = $user->id;
+    {
+        // dd($request->all());
+        $user = Auth::user();
+        $user_id = $user->id;
 
-    if ($request->isMethod('post')) {
+        if ($request->isMethod('post')) {
 
-        $event = Event::find($request->event_id);
-        $isUpdate = $event ? true : false;
+            $event = Event::find($request->event_id);
+            $isUpdate = $event ? true : false;
 
-        if (!$event) {
-            $event = new Event();
-        }
+            if (!$event) {
+                $event = new Event();
+            }
 
-        $event->user_id = $user_id;
-        $event->event_name = $request->event_name;
-        $event->event_type = (int) $request->event_type;
-        $event->start_date = $request->start_date;
-        $event->end_date = $request->end_date;
-        $event->address = $request->address;
-        $event->lat = $request->lat; 
-        $event->long = $request->long; 
-        $event->price = (int) $request->price;
-        $event->ticket_price = (int) $request->ticket_price;
-        $event->ticket_quantity = (int) $request->ticket_quantity;
-        $event->event_days = json_encode($request->event_days);
-        $event->start_time = $request->start_time;
-        $event->end_time = $request->end_time;
-        $event->duration = $request->duration;
-        $event->gap = $request->gap;
-        $event->event_limit = (int) $request->event_limit;
-        $event->description = $request->description;
-        $event->date_time = $request->date_time;
-        $event->is_deleted = 0;
-        $event->status = 0;
+            $event->user_id = $user_id;
+            $event->event_name = $request->event_name;
+            $event->event_type = (int) $request->event_type;
+            $event->start_date = $request->start_date;
+            $event->end_date = $request->end_date;
+            $event->address = $request->address;
+            $event->lat = $request->lat;
+            $event->long = $request->long;
+            $event->price = (int) $request->price;
+            $event->ticket_price = (int) $request->ticket_price;
+            $event->ticket_quantity = (int) $request->ticket_quantity;
+            $event->event_days = json_encode($request->event_days);
+            $event->start_time = $request->start_time;
+            $event->end_time = $request->end_time;
+            $event->duration = $request->duration;
+            $event->gap = $request->gap;
+            $event->event_limit = (int) $request->event_limit;
+            $event->description = $request->description;
+            $event->date_time = $request->date_time;
+            $event->is_deleted = 0;
+            $event->status = 0;
 
-        // if ($request->hasFile('media')) {
-        //     $image = $request->file('media');
-        //     $imageName = 'event_' . time() . '.' . $image->getClientOriginalExtension();
-        //     $image->move(public_path('uploads/event'), $imageName);
-        //     $event->media = 'uploads/event/' . $imageName;
-        // }
+            // if ($request->hasFile('media')) {
+            //     $image = $request->file('media');
+            //     $imageName = 'event_' . time() . '.' . $image->getClientOriginalExtension();
+            //     $image->move(public_path('uploads/event'), $imageName);
+            //     $event->media = 'uploads/event/' . $imageName;
+            // }
 
-        $event->save();
+            $event->save();
 
-        if ($request->hasFile('event_media')) {
+            if ($request->hasFile('event_media')) {
+                if ($isUpdate) {
+                    EventGalleryImage::where('event_id', $event->id)->delete();
+                }
+
+                foreach ($request->file('event_media') as $image) {
+                    $imageName = 'event_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $image->move(public_path('uploads/event'), $imageName);
+
+                    EventGalleryImage::create([
+                        'event_id' => $event->id,
+                        'event_media' => 'uploads/event/' . $imageName,
+                    ]);
+                }
+            }
+
             if ($isUpdate) {
-                EventGalleryImage::where('event_id', $event->id)->delete();
+                EventSlotModel::where('event_id', $event->id)->delete();
             }
 
-            foreach ($request->file('event_media') as $image) {
-                $imageName = 'event_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('uploads/event'), $imageName);
+            if ($event->event_limit == 1) {
 
-                EventGalleryImage::create([
-                    'event_id' => $event->id,
-                    'event_media' => 'uploads/event/' . $imageName,
-                ]);
+                $start = Carbon::parse($request->start_time);
+                $end = Carbon::parse($request->end_time);
+                $duration = (int) $request->duration;
+                $buffer = (int) $request->gap;
+
+                $slots = [];
+
+                while ($start->copy()->addMinutes($duration)->lte($end)) {
+                    $slotStart = $start->copy();
+                    $slotEnd = $start->copy()->addMinutes($duration);
+                    // $slots[] = $current->format('h:i A') . ' – ' . $slotEnd->format('h:i A');
+                    // $current->addMinutes($duration + $buffer);
+                    // echo "hii";die;
+
+                    EventSlotModel::create([
+                        'event_id' => $event->id,
+                        'slot_start' => $slotStart->format('H:i'),
+                        'slot_end' => $slotEnd->format('H:i'),
+                    ]);
+
+                    $start->addMinutes($duration + $buffer);
+                }
             }
-        }
 
-         if ($isUpdate) {
-            EventSlotModel::where('event_id', $event->id)->delete();
-        }
-
-        if ($event->event_limit == 1) {
-
-        $start = Carbon::parse($request->start_time);
-        $end = Carbon::parse($request->end_time);
-        $duration = (int) $request->duration;
-        $buffer = (int) $request->gap;
-
-        $slots = [];
-
-        while ($start->copy()->addMinutes($duration)->lte($end)) {
-            $slotStart = $start->copy();
-            $slotEnd = $start->copy()->addMinutes($duration);
-             // $slots[] = $current->format('h:i A') . ' – ' . $slotEnd->format('h:i A');
-             // $current->addMinutes($duration + $buffer);
-              // echo "hii";die;
-
-            EventSlotModel::create([
-                'event_id' => $event->id,
-                'slot_start' => $slotStart->format('H:i'),
-                'slot_end' => $slotEnd->format('H:i'),
-            ]);
-
-            $start->addMinutes($duration + $buffer);
+            return redirect()->route('interprise.event-list')->with('success', $isUpdate ? 'Event updated successfully!' : 'Event created successfully!');
         }
     }
-
-        return redirect()->route('interprise.event-list')->with('success', $isUpdate ? 'Event updated successfully!' : 'Event created successfully!');
-    }
-}
 
 
     /**
      * Display the specified resource.
      */
-   public function eventList(Request $request)
+    public function eventList(Request $request)
     {
         $user = Auth::user();
         $user_id =  $user->id;
-       // dd($user_id);
+        // dd($user_id);
         $eventlist = DB::table('events')->where('user_id', '=', $user_id)->where('is_deleted', '=', 0)->orderBy('id', 'desc')->paginate(20);
 
         return view('business.event-list', compact('eventlist'));
@@ -151,13 +152,12 @@ class EventController extends Controller
 
         $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
 
-       // dd($eventgallery);
-       
-         return view('business.create-event', compact('eventdetails','eventgallery'));
+        // dd($eventgallery);
 
+        return view('business.create-event', compact('eventdetails', 'eventgallery'));
     }
 
-     public function viewEvent(Request $request)
+    public function viewEvent(Request $request)
     {
         $id = $request->id;
 
@@ -165,17 +165,128 @@ class EventController extends Controller
         $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
         $eventslot = DB::table('event_slot')->where('event_id', '=', $id)->get();
 
-         return view('business.view-event', compact('eventdetails','eventgallery','eventslot'));
-
+        return view('business.view-event', compact('eventdetails', 'eventgallery', 'eventslot'));
     }
 
-   
+
     public function delete(Request $request)
     {
-      
+
         $user = Event::find($request->event);
         $user->is_deleted = 1;
         $user->save();
+    }
+
+
+
+
+    public function  sessionList(Request $request, $id = null)
+    {
+        $eventId = $id;
+        $sessionlist = DB::table('session')->where('event_id', $eventId)->orderBy('id', 'asc')->paginate(20);
+       
+        return view('business.session-list', compact('sessionlist'));
+    }
+
+
+    public function generateSessions(Request $request, $id = null)
+    {
+        $eventId = $id;
+
+        $event = DB::table('events')->where('id', $eventId)->where('is_deleted', 0)->first();
+
+        $eventDayNames = json_decode($event->event_days, true);
+
+        $dayNameToNumber = [
+            'Sunday' => 0,
+            'Monday' => 1,
+            'Tuesday' => 2,
+            'Wednesday' => 3,
+            'Thursday' => 4,
+            'Friday' => 5,
+            'Saturday' => 6,
+        ];
+
+        $eventDays = [];
+        if (empty($eventDayNames)) {
+            return redirect()->back()->with('error', 'Event days not provided.');
+        }
+
+        foreach ($eventDayNames as $dayName) {
+            if (isset($dayNameToNumber[$dayName])) {
+                $eventDays[] = $dayNameToNumber[$dayName];
+            }
+        }
+
+        $buffer = $event->gap;
+
+        if (!$event) {
+            return redirect()->back()->with('error', 'Event not found.');
+        }
+
+        $startDate = \Carbon\Carbon::parse($event->start_date);
+
+        $endDate = \Carbon\Carbon::parse($event->end_date);
+        //dd($endDate);
+        $weekendDates = [];
+
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            if (in_array($date->dayOfWeek, $eventDays)) {
+                $weekendDates[] = $date->format('Y-m-d');
+            }
+        }
+
+        $intervalMinutes = !empty($event->duration) ? (int)$event->duration : 120;
+
+        $useCustomTimes = !empty($event->start_time) && !empty($event->end_time);
+
+        $timeSlots = [];
+
+        if ($useCustomTimes) {
+            $start = \Carbon\Carbon::createFromFormat('H:i:s', $event->start_time);
+            $end = \Carbon\Carbon::createFromFormat('H:i:s', $event->end_time);
+
+            while ($start->lt($end)) {
+                $slotStart = $start->copy();
+                $slotEnd = $slotStart->copy()->addMinutes($intervalMinutes);
+
+                if ($slotEnd->gt($end)) break;
+
+                $timeSlots[] = [
+                    'start' => $slotStart->format('H:i:s'),
+                    'end'   => $slotEnd->format('H:i:s'),
+                ];
+
+                $start->addMinutes($intervalMinutes + $buffer);
+            }
+        }
+
+        //     if (!is_array($weekendDates) || !is_array($timeSlots)) {
+        //     return redirect()->back()->with('error', 'Invalid data for session creation.');
+        // }
+
+        foreach ($weekendDates as $date) {
+            foreach ($timeSlots as $slot) {
+                $exists = Session::where('event_id', $eventId)
+                    ->where('date', $date)
+                    ->where('start_time', $slot['start'])
+                    ->where('end_time', $slot['end'])
+                    ->exists();
+
+                if (!$exists) {
+                    Session::create([
+                        'event_id'   => $eventId,
+                        'date'       => $date,
+                        'start_time' => $slot['start'],
+                        'end_time'   => $slot['end'],
+                        'capacity'   => 50,
+                        'is_active'  => 1,
+                        'status'     => 0,
+                    ]);
+                }
+            }
+        }
+        return redirect()->route('interprise.session-list', ['id' => $eventId])->with('success', 'Sessions generated successfully!');
     }
 
 }

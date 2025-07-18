@@ -46,6 +46,9 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     // Ticket routes
     Route::any('/create-ticket', [BusinessController::class, 'createTicket'])->name('create-ticket');
     Route::any('/ticket-list', [BusinessController::class, 'ticketList'])->name('ticket-list');
+   // Route::any('/session-list/{id?}',[EventController::class,'SessionList'])->name('interprise.session-list');
+    Route::any('/session-list/{id}', [EventController::class, 'SessionList'])->name('session-list');
+    Route::any('/generateSessions/{id?}', [EventController::class, 'generateSessions'])->name('generateSessions');
 });
 
 // Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
