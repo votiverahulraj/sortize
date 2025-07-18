@@ -1,12 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\GuestController;
-use App\Http\Controllers\Api\ServicePackages;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TestController;
+use App\Http\Controllers\Api\ServicePackages;
 use Illuminate\Support\Facades\Route;
-// gdfgdf
+use App\Http\Controllers\AuthController;
 
 Route::get('/status', function () {
     return response()->json(['status' => 'API is working']);
@@ -20,7 +18,7 @@ Route::post('/verify_OTP', [UserController::class, 'verify_OTP']);
 Route::post('/resetPassword', [UserController::class, 'resetPassword']);
 Route::post('/suggested_user', [UserController::class, 'suggested_user']);
 Route::get('/professional_title', [UserController::class, 'professional_title']);
-Route::get('/home_page', [UserController::class, 'event_list']);
+Route::get('/home_page', [UserController::class, 'home_page']);
 Route::post('/friend_requests', [UserController::class, 'friend_requests']);
 Route::post('/pending_request_list', [UserController::class, 'pending_request_list']);
 Route::post('/accept_request_list', [UserController::class, 'accept_request_list']);
@@ -42,14 +40,6 @@ Route::post('/getSubCoachType/{coach_type_id}', [GuestController::class, 'getAll
 // Route::post('/updateProfile', [AuthController::class, 'updateProfile']);
 // Route::post('/getuserprofile', [AuthController::class, 'getuserprofile']);
 // Route::post('/getcoachprofile', [AuthController::class, 'getcoachprofile']);
-
-
-// VG route start
-Route::get('/test', [TestController::class, 'test']);
-
-
-// VG route end
-
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/me', [AuthController::class, 'me']);
