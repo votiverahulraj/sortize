@@ -15,10 +15,18 @@ class Event extends Model
 
     public function event_reviews()
     {
-        return $this->hasMany(Review::class, 'event_id', 'id');
+        return $this->hasMany(Review::class, 'event_id');
     }
 
+    public function event_slots()
+    {
+        return $this->hasMany(EventSlot::class, 'event_id');
+    }
 
+    public function joind_members()
+    {
+        return $this->hasMany(JoinedEvent::class, 'event_id');
+    }
 
 
 }

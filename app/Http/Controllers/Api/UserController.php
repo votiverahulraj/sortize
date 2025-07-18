@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-
+// bdfhdfhd
 
 class UserController extends Controller
 {
@@ -865,8 +865,10 @@ public function professional_title()
         try {
            $events = Event::with([
                         'coach',
+                        'event_slots',
+                        'joind_members.user',
                         'event_reviews',
-                        'coach.event_reviews.user',
+                        'coach.event_reviews',
                     ])
                     ->where('is_deleted', '0')
                     ->where('status', '1')
@@ -885,14 +887,54 @@ public function professional_title()
                     })
                     ->toArray();
 
+                // Events slots shows
+                $EventSlots = [];
+                if ($event->event_slots && $event->event_slots->count() > 0) {
+                    foreach ($event->event_slots as $slot) {
+                        $EventSlots[] = [
+                            'id' => $slot->id,
+                            'event_id' => $slot->event_id,
+                            'slot_start' => $slot->slot_start,
+                            'slot_end' => $slot->slot_end,
+                        ];
+                    }
+                }
+
+                // Joined members shows
+                $JoinedMembers = [];
+
+                if ($event->joind_members && $event->joind_members->count() > 0) {
+                    foreach ($event->joind_members as $member) {
+                        $JoinedMembers[] = [
+                            'id' => $member->id,
+                            'user_id' => $member->user_id,
+                            'event_id' => $member->event_id,
+                            'first_name' => $member->user->first_name ?? '',
+                            'last_name' => $member->user->last_name ?? '',
+                            'profile_image' => $member->user && $member->user->profile_image
+                                        ? url('public/uploads/profile_image/' . $member->user->profile_image)
+                                        : '',
+                        ];
+                    }
+                }
+
+
+                // Organizer details show
                 $coachDetails = $event->coach ? [
                     'coach_id' => $event->coach->id,
                     'first_name' => $event->coach->first_name ?? '',
                     'last_name' => $event->coach->last_name ?? '',
-                    'profile_image' => url('public/uploads/profile_image/' . $event->coach->profile_image) ?? '',
+                    'contact_number' => $event->coach->contact_number ?? '',
+                    'profile_image' => $event->coach && $event->coach->profile_image
+                                        ? url('public/uploads/profile_image/' . $event->coach->profile_image)
+                                        : '',
+                ] : '';
 
-                ] : null;
-
+                // Average rating showing of coach
+                $coach = $event->coach;
+                $averageRating = $coach && $coach->event_reviews->count() > 0
+                        ? round($coach->event_reviews->avg('rating'), 1)
+                        : null;
 
 
                 // Build the event data
@@ -915,7 +957,7 @@ public function professional_title()
                     'longitude'       => $event->longitude ?? '',
                     'event_media'     => $eventImages ?? [],
                     'organizer'       => $coachDetails ?? '',
-                    'review_avg_rating' => number_format($event->event_reviews->avg('rating'), 2) ?? '',
+                    'review_avg_rating' => $averageRating ? number_format($averageRating, 2) : '',
                     'event_reviews' => $event->event_reviews->map(function ($review) {
                         return [
                             'review_id' => $review->id ?? '',
@@ -929,6 +971,9 @@ public function professional_title()
                             'created_at'=> $review->created_at->format('Y-m-d H:i:s') ?? '',
                         ];
                     }),
+                    'event_slots' => $EventSlots,
+                    'joined_members' => $JoinedMembers,
+                    'joined_members_count' => count($JoinedMembers),
                 ];
             }
 
