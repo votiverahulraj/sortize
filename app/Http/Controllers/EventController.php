@@ -184,7 +184,8 @@ class EventController extends Controller
     {
         $eventId = $id;
         $sessionlist = DB::table('session')->where('event_id', $eventId)->orderBy('id', 'asc')->paginate(20);
-       
+        // dd($sessionlist);
+        
         return view('business.session-list', compact('sessionlist'));
     }
 
@@ -265,6 +266,7 @@ class EventController extends Controller
         //     return redirect()->back()->with('error', 'Invalid data for session creation.');
         // }
 
+         $ticket_quantity = $event->ticket_quantity;
         foreach ($weekendDates as $date) {
             foreach ($timeSlots as $slot) {
                 $exists = Session::where('event_id', $eventId)
@@ -273,13 +275,37 @@ class EventController extends Controller
                     ->where('end_time', $slot['end'])
                     ->exists();
 
-                if (!$exists) {
-                    Session::create([
+                // if (!$exists) {
+                //     Session::create([
+                //         'event_id'   => $eventId,
+                //         'date'       => $date,
+                //         'start_time' => $slot['start'],
+                //         'end_time'   => $slot['end'],
+                //         'capacity'   => 50,
+                //         'is_active'  => 1,
+                //         'status'     => 0,
+                //     ]);
+                // }
+                 if ($exists) {
+                         $session = Session::where('event_id', $eventId)
+                        ->where('date', $date)
+                        ->where('start_time', $slot['start'])
+                        ->where('end_time', $slot['end'])
+                        ->first();
+
+                        if ($session) {
+                            $session->capacity  = $ticket_quantity;
+                            $session->is_active = 1;
+                            $session->status    = 0;
+                            $session->save();
+                        }
+                }else{
+                      Session::create([
                         'event_id'   => $eventId,
                         'date'       => $date,
                         'start_time' => $slot['start'],
                         'end_time'   => $slot['end'],
-                        'capacity'   => 50,
+                        'capacity'   => $ticket_quantity,
                         'is_active'  => 1,
                         'status'     => 0,
                     ]);
@@ -287,6 +313,47 @@ class EventController extends Controller
             }
         }
         return redirect()->route('interprise.session-list', ['id' => $eventId])->with('success', 'Sessions generated successfully!');
+    }
+    
+    public function editSession($id=null)
+    {
+        try {
+             $session=Session::findOrFail($id);
+             $event_id = $session->event_id ?? null;
+            return view('business.edit-session', compact('session', 'event_id'));
+        } catch (\Throwable $th) {
+            // dd("error");session-list
+            return redirect()->back()->with('error', 'Session not found.');
+        }
+    }
+
+    public function updateSession(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'event_id' => 'required',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'capacity' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+
+            // dd($validator);
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            $session = Session::findOrFail($id);
+            $session->update([
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'capacity' => $request->capacity,
+            ]);
+
+            return redirect()->route('interprise.session-list', ['id' => $request->event_id])->with('success', 'Session updated successfully!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Failed to update session. Please try again.');
+        }
     }
 
 }
