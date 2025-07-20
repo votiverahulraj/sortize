@@ -128,18 +128,13 @@ class User extends Authenticatable
         return $this->hasMany(MasterEnquiry::class, 'user_id');
     }
 
-    public function coach_reviews()
-    {
-        return $this->hasMany(Review::class, 'id', 'coach_id');
-    }
-
-    public function event_reviews()
-    {
-        return $this->hasMany(Review::class, 'coach_id', 'id'); // CORRECT: based on coach_id
-    }
-
-    // public function event_reviews()
+    // public function reviews()
     // {
-    //     return $this->hasMany(Review::class, 'event_id', 'id');
+    //     return $this->hasMany(Review::class, 'id', 'coach_id');
     // }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'coach_id', 'id');
+    }
 }
