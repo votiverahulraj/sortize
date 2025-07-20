@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Review extends Model
+class JoinedEvent extends Model
 {
-    protected $table = 'review';
+    protected $table = 'joined_events';
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
 }
