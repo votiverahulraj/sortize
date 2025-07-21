@@ -37,7 +37,7 @@
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.userList')}}">User List</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachList')}}">Interprise List</a></li>
-          
+
         </ul>
       </div>
     </li>
@@ -54,6 +54,20 @@
         </ul>
       </div>
     </li>
+
+      <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#booking-manage" aria-expanded="false" aria-controls="booking-manage">
+        <i class="icon-grid-2 menu-icon"></i>
+        <span class="menu-title">Booking Managment</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="booking-manage">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"><a class="nav-link" href="{{ route('admin.booking-list') }}">Booking List </a></li>
+        </ul>
+      </div>
+    </li>
+
       <!--  <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
         <i class="icon-contract menu-icon"></i>
@@ -103,7 +117,7 @@
         </ul>
       </div>
     </li>
- 
+
    <!-- <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
         <i class="icon-head menu-icon"></i>

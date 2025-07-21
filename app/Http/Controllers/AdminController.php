@@ -14,6 +14,7 @@ use App\Models\Session;
 use App\Models\Event;
 use App\Models\EventGalleryImage;
 use App\Models\EventSlotModel;
+use App\Models\Booking;
 
 
 
@@ -122,7 +123,7 @@ class AdminController extends Controller
         $eventdetails = DB::table('events')->where('id', '=', $id)->where('is_deleted', '=', 0)->first();
          $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
         $eventslot = DB::table('event_slot')->where('event_id', '=', $id)->get();
-   
+
          return view('admin.view-event', compact('eventdetails','eventgallery','eventslot'));
 
     }
@@ -143,7 +144,7 @@ class AdminController extends Controller
      public function createEvent(Request $request, $id = null)
    {
 
-    // $user = Auth::user(); 
+    // $user = Auth::user();
     // $user_id = $user->id;
 
     if ($request->isMethod('post')) {
@@ -161,8 +162,8 @@ class AdminController extends Controller
         $event->start_date = $request->start_date;
         $event->end_date = $request->end_date;
         $event->address = $request->address;
-        $event->lat = $request->lat; 
-        $event->long = $request->long; 
+        $event->lat = $request->lat;
+        $event->long = $request->long;
         $event->price = (int) $request->price;
         $event->ticket_price = (int) $request->ticket_price;
         $event->ticket_quantity = (int) $request->ticket_quantity;
@@ -277,7 +278,7 @@ class AdminController extends Controller
         $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
 
        // dd($eventgallery);
-       
+
          return view('admin.create-event', compact('eventdetails','eventgallery'));
 
     }
@@ -460,7 +461,30 @@ $eventId = $request->event_id;
         $user->save();
     }
 
+    //21-07-2025
+public function bookingList()
+{
+      $bookings = Booking::with(['user:id,first_name,last_name', 'event:id,event_name,address', 'slot:id,date,start_time,end_time'])
+            ->where('is_active', 1)
+            ->whereHas('event', function($query) {
+                $query->where('is_deleted', 0);
+            })
+            ->whereHas('slot', function($query) {
+                $query->where('is_active', 1);
+            })
+            ->get();
+            // foreach ($bookings as $booking) {
+            //     echo "<pre>";
+            //     print_r($booking->toArray());
+            //     echo "</pre>";
+            // }
+        return view('admin.bookings_list', compact('bookings'));
 }
+
+}
+
+
+
 
 
 ?>
