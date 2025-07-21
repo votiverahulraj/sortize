@@ -297,108 +297,137 @@ class AdminController extends Controller
         return view('admin.create-session', compact('events'));
     }
 
-  public function generateSessions(Request $request, $id = null)
-{
-    $eventId = $id;
+    public function generateSessions(Request $request, $id = null)
+    {
+        $eventId = $id;
 
-    $event = DB::table('events')->where('id', $eventId)->where('is_deleted', 0)->first();
+        $event = DB::table('events')->where('id', $eventId)->where('is_deleted', 0)->first();
 
-   $eventDayNames = json_decode($event->event_days, true);
+    $eventDayNames = json_decode($event->event_days, true);
 
-$dayNameToNumber = [
-    'Sunday' => 0,
-    'Monday' => 1,
-    'Tuesday' => 2,
-    'Wednesday' => 3,
-    'Thursday' => 4,
-    'Friday' => 5,
-    'Saturday' => 6,
-];
+    $dayNameToNumber = [
+        'Sunday' => 0,
+        'Monday' => 1,
+        'Tuesday' => 2,
+        'Wednesday' => 3,
+        'Thursday' => 4,
+        'Friday' => 5,
+        'Saturday' => 6,
+    ];
 
 
-$eventDays = [];
- if (empty($eventDayNames)) {
-    return redirect()->back()->with('error', 'Event days not provided.');
-}
-
-foreach ($eventDayNames as $dayName) {
-    if (isset($dayNameToNumber[$dayName])) {
-        $eventDays[] = $dayNameToNumber[$dayName];
-    }
-}
-
-    $buffer = $event->gap;
-
-    if (!$event) {
-        return redirect()->back()->with('error', 'Event not found.');
+    $eventDays = [];
+    if (empty($eventDayNames)) {
+        return redirect()->back()->with('error', 'Event days not provided.');
     }
 
-  $startDate = \Carbon\Carbon::parse($event->start_date);
-
-  $endDate = \Carbon\Carbon::parse($event->end_date);
-  //dd($endDate);
-  $weekendDates = [];
-
- for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-
-    if (in_array($date->dayOfWeek, $eventDays)) {
-        $weekendDates[] = $date->format('Y-m-d');
-
-    }
-}
-
-    $intervalMinutes = !empty($event->duration) ? (int)$event->duration : 120;
-
-    $useCustomTimes = !empty($event->start_time) && !empty($event->end_time);
-
-    $timeSlots = [];
-
-    if ($useCustomTimes) {
-        $start = \Carbon\Carbon::createFromFormat('H:i:s', $event->start_time);
-        $end = \Carbon\Carbon::createFromFormat('H:i:s', $event->end_time);
-
-        while ($start->lt($end)) {
-            $slotStart = $start->copy();
-            $slotEnd = $slotStart->copy()->addMinutes($intervalMinutes);
-
-             if ($slotEnd->gt($end)) break;
-
-            $timeSlots[] = [
-                'start' => $slotStart->format('H:i:s'),
-                'end'   => $slotEnd->format('H:i:s'),
-            ];
-
-            $start->addMinutes($intervalMinutes+$buffer);
+    foreach ($eventDayNames as $dayName) {
+        if (isset($dayNameToNumber[$dayName])) {
+            $eventDays[] = $dayNameToNumber[$dayName];
         }
     }
 
-//     if (!is_array($weekendDates) || !is_array($timeSlots)) {
-//     return redirect()->back()->with('error', 'Invalid data for session creation.');
-// }
+        $buffer = $event->gap;
 
-   foreach ($weekendDates as $date) {
-    foreach ($timeSlots as $slot) {
-        $exists = Session::where('event_id', $eventId)
-            ->where('date', $date)
-            ->where('start_time', $slot['start'])
-            ->where('end_time', $slot['end'])
-            ->exists();
+        if (!$event) {
+            return redirect()->back()->with('error', 'Event not found.');
+        }
 
-        if (!$exists) {
-            Session::create([
-                'event_id'   => $eventId,
-                'date'       => $date,
-                'start_time' => $slot['start'],
-                'end_time'   => $slot['end'],
-                'capacity'   => 50,
-                'is_active'  => 1,
-                'status'     => 0,
-            ]);
+    $startDate = \Carbon\Carbon::parse($event->start_date);
+
+    $endDate = \Carbon\Carbon::parse($event->end_date);
+    //dd($endDate);
+    $weekendDates = [];
+
+    for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+
+        if (in_array($date->dayOfWeek, $eventDays)) {
+            $weekendDates[] = $date->format('Y-m-d');
+
         }
     }
-}
-    return redirect()->route('admin.session-list', ['id' => $eventId])->with('success', 'Sessions generated successfully!');
-}
+
+        $intervalMinutes = !empty($event->duration) ? (int)$event->duration : 120;
+
+        $useCustomTimes = !empty($event->start_time) && !empty($event->end_time);
+
+        $timeSlots = [];
+
+        if ($useCustomTimes) {
+            $start = \Carbon\Carbon::createFromFormat('H:i:s', $event->start_time);
+            $end = \Carbon\Carbon::createFromFormat('H:i:s', $event->end_time);
+
+            while ($start->lt($end)) {
+                $slotStart = $start->copy();
+                $slotEnd = $slotStart->copy()->addMinutes($intervalMinutes);
+
+                if ($slotEnd->gt($end)) break;
+
+                $timeSlots[] = [
+                    'start' => $slotStart->format('H:i:s'),
+                    'end'   => $slotEnd->format('H:i:s'),
+                ];
+
+                $start->addMinutes($intervalMinutes+$buffer);
+            }
+        }
+
+    //     if (!is_array($weekendDates) || !is_array($timeSlots)) {
+    //     return redirect()->back()->with('error', 'Invalid data for session creation.');
+    // }
+
+    $ticket_quantity = $event->ticket_quantity;
+
+    foreach ($weekendDates as $date) {
+        foreach ($timeSlots as $slot) {
+            $exists = Session::where('event_id', $eventId)
+                ->where('date', $date)
+                ->where('start_time', $slot['start'])
+                ->where('end_time', $slot['end'])
+                ->exists();
+
+            // if (!$exists) {
+            //     Session::create([
+            //         'event_id'   => $eventId,
+            //         'date'       => $date,
+            //         'start_time' => $slot['start'],
+            //         'end_time'   => $slot['end'],
+            //         'capacity'   => 50,
+            //         'is_active'  => 1,
+            //         'status'     => 0,
+            //     ]);
+            // }
+
+            if ($exists) {
+                $session = Session::where('event_id', $eventId)
+               ->where('date', $date)
+               ->where('start_time', $slot['start'])
+               ->where('end_time', $slot['end'])
+               ->first();
+
+               if ($session) {
+                   $session->capacity  = $ticket_quantity;
+                   $session->is_active = 1;
+                   $session->status    = 0;
+                   $session->save();
+               }
+       }else{
+             Session::create([
+               'event_id'   => $eventId,
+               'date'       => $date,
+               'start_time' => $slot['start'],
+               'end_time'   => $slot['end'],
+               'capacity'   => $ticket_quantity,
+               'is_active'  => 1,
+               'status'     => 0,
+           ]);
+       }
+
+
+        }
+    }
+        return redirect()->route('admin.session-list', ['id' => $eventId])->with('success', 'Sessions generated successfully!');
+    }
 
 public function edit($id)
 {
