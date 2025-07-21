@@ -1,4 +1,4 @@
-@extends('admin.layouts.layout')
+@extends('business.layouts.layout')
 
 @section('content')
     <div class="main-panel">
@@ -85,6 +85,7 @@
                                           <a href="{{ route('interprise.edit-session', ['id' => $session->id]) }}">
                                               <i class="mdi mdi-lead-pencil"></i>
                                           </a>
+
                                       </td>
                                     </tr>
                                 @endforeach
@@ -162,7 +163,7 @@
             var status = $(this).val();
             var session_id = $(this).attr('user');
             $.ajax({
-                url: "{{ url('/admin/session_status') }}",
+                url: "{{ url('/dashboard/session_status') }}",
                 type: "POST",
                 datatype: "json",
                 data: {
@@ -171,6 +172,7 @@
                     '_token': '{{ csrf_token() }}'
                 },
                 success: function(result) {
+                    console.log(result);
                     Swal.fire({
                         title: "Success!",
                         text: "Status updated!",

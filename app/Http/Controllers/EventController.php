@@ -185,7 +185,7 @@ class EventController extends Controller
         $eventId = $id;
         $sessionlist = DB::table('session')->where('event_id', $eventId)->orderBy('id', 'asc')->paginate(20);
         // dd($sessionlist);
-        
+
         return view('business.session-list', compact('sessionlist'));
     }
 
@@ -314,7 +314,7 @@ class EventController extends Controller
         }
         return redirect()->route('interprise.session-list', ['id' => $eventId])->with('success', 'Sessions generated successfully!');
     }
-    
+
     public function editSession($id=null)
     {
         try {
@@ -354,6 +354,13 @@ class EventController extends Controller
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Failed to update session. Please try again.');
         }
+    }
+
+    public function session_status(Request $request)
+    {
+        $user = session::find($request->user);
+        $user->is_active=$request->is_active;
+        $user->save();
     }
 
 }

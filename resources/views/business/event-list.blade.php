@@ -31,7 +31,7 @@
 @endif
 
                 <div class="row mb-3">
-                    
+
   <div class="table-responsive">
     <table class="table table-bordered align-middle text-center">
       <thead class="table-dark">
@@ -77,7 +77,7 @@
     <td>{{ $event->address }}</td>
     <td>₹{{ $event->price }}</td>
     <td>
-   
+
     @if($event->event_limit == 0)
         single
     @else
@@ -85,7 +85,7 @@
     @endif
 </td>
     <td>
-       <a href="{{route('interprise.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a> 
+       <a href="{{route('interprise.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a>
         <a href="javascript:void(0)" class="del_user" event_id="{{$event->id}}"><i class="mdi mdi-delete"></i></a>
          <a href="{{route('interprise.view-event')}}/{{ $event->id }}"><i class="mdi mdi-eye"></i></a>
 
@@ -96,14 +96,14 @@
 @endforeach
 @endif
   </tbody>
-    </table>     
+    </table>
                 <div class="d-flex add-pagination mt-4">
                         {{ $eventlist->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
          </div>
         </div>
-            
+
         @endsection
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type="text/javascript">
