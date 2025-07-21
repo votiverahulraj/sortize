@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\ApiEventController;
 use App\Http\Controllers\Api\GuestController;
 use App\Http\Controllers\Api\ServicePackages;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\AuthController;
 // use App\Http\Controllers\TestController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+
 // gdfgdf
 
 Route::get('/status', function () {
@@ -46,7 +48,7 @@ Route::post('/getSubCoachType/{coach_type_id}', [GuestController::class, 'getAll
 
 // VG route start
 // Route::get('/test', [TestController::class, 'test']);
-
+Route::post('/EventSlotbyDate', [ApiEventController::class, 'EventSlotbyDate']);
 
 // VG route end
 
