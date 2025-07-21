@@ -23,9 +23,9 @@
           <li class="nav-item"> <a class="nav-link" href="{{url('/dashboard/create-event')}}">Create Event</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{url('/dashboard/event-list')}}">Event List</a></li>
         </ul>
-      </div> 
+      </div>
     </li>
-	
+
 	<!-- <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#ticket-manage" aria-expanded="false" aria-controls="ticket-manage">
         <i class="icon-grid-2 menu-icon"></i>
@@ -39,7 +39,7 @@
         </ul>
       </div>
     </li> -->
-    
+
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#booking-manage" aria-expanded="false" aria-controls="booking-manage">
         <i class="icon-grid-2 menu-icon"></i>
@@ -48,12 +48,12 @@
       </a>
       <div class="collapse" id="booking-manage">
         <ul class="nav flex-column sub-menu">
-          <li class="nav-item"><a class="nav-link" href="#">Booking List </a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('interprise.booking-list') }}">Booking List </a></li>
         </ul>
       </div>
     </li>
 
-    
+
 
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#review-manage" aria-expanded="false" aria-controls="review-manage">

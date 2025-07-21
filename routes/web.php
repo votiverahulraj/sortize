@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ReviewController;
@@ -54,6 +55,8 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     Route::post('/update-session/{id}', [EventController::class, 'updateSession'])->name('update-session');
     //21-07-2025
     Route::post('/session_status', [EventController::class, 'session_status'])->name('session_status');
+    Route::get('/booking-list',[BookingController::class,'bookingList'])->name('booking-list');
+
 });
 
 // Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
@@ -166,11 +169,15 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
        Route::any('/admin/session-list/{id?}', [AdminController::class, 'sessionList'])->name('admin.session-list');
 
-        Route::any('/admin/addSession/{id?}', [AdminController::class, 'addSession'])->name('admin.addSession');
+      Route::any('/admin/addSession/{id?}', [AdminController::class, 'addSession'])->name('admin.addSession');
       Route::any('/admin/generateSessions/{id?}', [AdminController::class, 'generateSessions'])->name('admin.generateSessions');
       Route::get('/admin/edit-session/{id}', [AdminController::class, 'edit'])->name('admin.session.edit');
      Route::post('/admin/updateSession/{id}', [AdminController::class, 'update'])->name('admin.updateSession');
      Route::post('/admin/session_status', [AdminController::class, 'session_status']);
+
+    // 21/07/2025
+    Route::get('/admin/booking-list',[AdminController::class,'bookingList'])->name('admin.booking-list');
+
 
 });
 
