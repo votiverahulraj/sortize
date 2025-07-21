@@ -48,10 +48,12 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     Route::any('/ticket-list', [BusinessController::class, 'ticketList'])->name('ticket-list');
    // Route::any('/session-list/{id?}',[EventController::class,'SessionList'])->name('interprise.session-list');
     Route::any('/session-list/{id}', [EventController::class, 'SessionList'])->name('session-list');
-    Route::any('/generateSessions/{id?}', [EventController::class, 'generateSessions'])->name('generateSessions');
+    Route::any('/generateSlots/{id?}', [EventController::class, 'generateSessions'])->name('generateSessions');
     //20-07-2025
     Route::get('/edit-session/{id}', [EventController::class, 'editSession'])->name('edit-session');
     Route::post('/update-session/{id}', [EventController::class, 'updateSession'])->name('update-session');
+    //21-07-2025
+    Route::post('/session_status', [EventController::class, 'session_status'])->name('session_status');
 });
 
 // Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
