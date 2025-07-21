@@ -142,4 +142,13 @@ class User extends Authenticatable
     // {
     //     return $this->hasMany(Review::class, 'event_id', 'id');
     // }
+
+    // User has many bookings
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'user_id');
+    }
+
+
+
 }
