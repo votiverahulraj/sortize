@@ -28,5 +28,11 @@ class Event extends Model
         return $this->hasMany(JoinedEvent::class, 'event_id');
     }
 
+    // Event has many bookings
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'event_id');
+    }
+
 
 }
