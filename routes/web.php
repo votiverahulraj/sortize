@@ -56,6 +56,7 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     //21-07-2025
     Route::post('/session_status', [EventController::class, 'session_status'])->name('session_status');
     Route::get('/booking-list',[BookingController::class,'bookingList'])->name('booking-list');
+    Route::get('/view-booking/{id?}', [BookingController::class, 'viewBooking'])->name('view-booking');
 
 });
 
@@ -177,6 +178,9 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
     // 21/07/2025
     Route::get('/admin/booking-list',[AdminController::class,'bookingList'])->name('admin.booking-list');
+    // 22-07-2025
+    Route::get('/admin/view-booking/{id?}', [AdminController::class, 'viewBooking'])->name('admin.viewBookings');
+
 
 
 });

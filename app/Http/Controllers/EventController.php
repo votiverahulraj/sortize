@@ -12,6 +12,7 @@ use App\Models\EventGalleryImage;
 use Carbon\Carbon;
 use App\Models\EventSlotModel;
 use App\Models\Session;
+use App\Models\Booking;
 
 class EventController extends Controller
 {
@@ -155,6 +156,27 @@ class EventController extends Controller
         // dd($eventgallery);
 
         return view('business.create-event', compact('eventdetails', 'eventgallery'));
+    }
+
+     public function bookingList()
+    {
+        $user = Auth::user();
+        $user_id =  $user->id;
+
+        $bookings = Booking::with(['user:id,first_name,last_name', 'event:id,event_name,address', 'slot:id,date,start_time,end_time'])
+            ->where('is_active', 1)
+            ->whereHas('event', function ($query) use ($user_id) {
+                $query->where('is_deleted', 0)
+                    ->where('user_id', $user_id);
+            })
+            ->whereHas('slot', function ($query) {
+                $query->where('is_active', 1);
+            })
+            ->get();
+
+        // dd($bookings);
+
+        return view('business.booking_list', compact('bookings'));
     }
 
     public function viewEvent(Request $request)
