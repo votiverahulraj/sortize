@@ -1,14 +1,12 @@
-@extends('business.layouts.layout')
+@extends('admin.layouts.layout')
 
 <style>
-  .badge-cust {
-    padding: 5px 10px;
-    font-size: 14px;
-    border-radius: 20px;
+    .badge-cust {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-radius: 20px;
 
-  }
-
-
+    }
 </style>
 
 @section('content')
@@ -25,15 +23,14 @@
             </div>
 
 
-            <a href="#" class="btn btn-outline-info btn-fw"
-                style="float: right; margin-top: -55px;">
+            {{-- <a href="#" class="btn btn-outline-info btn-fw" style="float: right; margin-top: -55px;">
                 Book Slot
-            </a>
+            </a> --}}
 
             <div class="row mb-3">
 
                 <div class="table-responsive">
-                    <table class="table table-bordered align-middle text-center">
+                    <table class="table table-bordered align-middle text-center" id="bookingtable">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">S No</th>
@@ -44,12 +41,12 @@
                                 <th scope="col">Price</th>
                                 <th scope="col">Payment Status</th>
                                 <th scope="col">Status</th>
-                                 <th scope="col">Booked At</th>
+                                <th scope="col">Booked At</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                              @php
+                            @php
                                 $eventTypes = [
                                     0 => 'Sports',
                                     1 => 'Music',
@@ -66,9 +63,10 @@
                                     <tr>
                                         <td>{{ $i }}</td>
 
-                                         <td>{{ $booking->user->first_name ?? '' }} {{ $booking->user->last_name ?? '' }}</td>
+                                        <td>{{ $booking->user->first_name ?? '' }} {{ $booking->user->last_name ?? '' }}
+                                        </td>
                                         <td>{{ $booking->event->event_name ?? '' }}</td>
-                                       <td>
+                                        <td>
                                             {{ $booking->slot->date ?? '' }}<br>
                                             {{ $booking->slot->start_time ?? '' }} - {{ $booking->slot->end_time ?? '' }}
                                         </td>
@@ -78,18 +76,19 @@
                                         {{-- <td>{{ ucfirst($booking->payment_status) }}</td> --}}
                                         <td>
                                             {{-- <label class="badge-cust badge-outline-primary">{{ ucfirst($booking->payment_status) }}</label> --}}
-                                          <label class="badge-cust {{ $booking->payment_status == 'success' ? 'badge-outline-success' : 'badge-outline-primary' }}">
+                                            <label
+                                                class="badge-cust {{ $booking->payment_status == 'success' ? 'badge-outline-success' : 'badge-outline-primary' }}">
                                                 {{ ucfirst($booking->payment_status) }}
-                                        </label>
+                                            </label>
 
                                         </td>
                                         <td>{{ ucfirst($booking->booking_status) }}</td>
                                         <td>{{ \Carbon\Carbon::parse($booking->booked_at)->format('d M Y, h:i A') }}</td>
 
                                         <td>
-                                            {{-- <a href="javascript:void(0)" class="del_booking" booking_id=""><i class="mdi mdi-delete"></i></a> | --}}
-                                            {{-- <a href="#"><i class="mdi mdi-lead-pencil"></i></a> | --}}
-                                            <a href="{{ route('interprise.view-booking')}}/{{ $booking->id }}"><i class="mdi mdi mdi-eye"></i></a>
+
+                                            <a href="#"><i
+                                                    class="mdi mdi mdi-eye"></i></a>
                                         </td>
                                     </tr>
 
@@ -100,13 +99,25 @@
                         </tbody>
                     </table>
                     <div class="d-flex add-pagination mt-4">
-                        {{-- {{ $bookings->links('pagination::bootstrap-4') }} --}}
+                        {{ $bookings->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
         </div>
 
-@endsection
+    @endsection
+    {{--
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript"></script>
+
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                var table = $('#bookingtable').DataTable({
+                    "bPaginate": false,
+                    "bInfo": false,
+                });
+
+            });
+        </script>
+    @endpush

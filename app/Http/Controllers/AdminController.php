@@ -481,6 +481,28 @@ public function bookingList()
         return view('admin.bookings_list', compact('bookings'));
 }
 
+
+public function viewBooking($id = null)
+{
+     $event = Event::where('id', $id)->exists();
+
+    if (!$event) {
+        return redirect()->back()->with('error', 'Event not found.');
+    }
+
+    $bookings = Booking::with(['user:id,first_name,last_name', 'event:id,event_name,address', 'slot:id,date,start_time,end_time'])
+            ->where('event_id', $id)
+            ->paginate(5);
+
+    if (!$bookings) {
+        return redirect()->back()->with('error', 'Booking not found.');
+    }
+
+    return view('admin.view-booking', compact('bookings'));
+}
+
+
+
 }
 
 

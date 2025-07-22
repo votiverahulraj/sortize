@@ -30,14 +30,14 @@
     </script>
 @endif
 
- <a href="{{route('admin.addEvent')}}" 
-   class="btn btn-outline-info btn-fw" 
+ <a href="{{route('admin.addEvent')}}"
+   class="btn btn-outline-info btn-fw"
    style="float: right; margin-top: -55px;">
    Add Event
 </a>
 
                 <div class="row mb-3">
-                    
+
   <div class="table-responsive">
     <table class="table table-bordered align-middle text-center">
       <thead class="table-dark">
@@ -53,6 +53,7 @@
            <th scope="col">Status</th>
           <th scope="col">Action</th>
           <th scope="col">Manage Session</th>
+          <th scope="col">View Bookings</th>
         </tr>
       </thead>
       <tbody>
@@ -97,25 +98,26 @@
                                 </select>
                               </td>
     <td>
-       <a href="{{route('admin.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a> 
+       <a href="{{route('admin.edit-event')}}/{{ $event->id }}"><i class="mdi mdi-lead-pencil"></i></a>
         <a href="javascript:void(0)" class="del_user" event_id="{{$event->id}}"><i class="mdi mdi-delete"></i></a>
          <a href="{{route('admin.view-event')}}/{{ $event->id }}"><i class="mdi mdi-eye"></i></a>
 
     </td>
     <td><a href="{{route('admin.generateSessions')}}/{{ $event->id }}">View Slot</a></td>
+    <td><a href="{{route('admin.viewBookings')}}/{{ $event->id }}">View</a></td>
 </tr>
  @php $i++; @endphp
 @endforeach
 @endif
   </tbody>
-    </table>     
+    </table>
                 <div class="d-flex add-pagination mt-4">
                         {{ $eventlist->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
          </div>
         </div>
-            
+
         @endsection
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script type="text/javascript">
@@ -174,7 +176,7 @@
                 }
               });
 
-              
+
             });
             $(document).on('change','.event_status',function(){
               var status=$(this).val();
