@@ -57,8 +57,8 @@
           @if(empty($event_id))
 <select id="eventTypeDropdown" class="form-select" name="event_limit">
     <option value="">Select Event Type</option>
-    <option value="0">Only One Event</option>
-    <option value="1">Recurrent Event</option>
+    <option value="0" @if(old('event_limit') == "0") selected @endif>Only One Event</option>
+    <option value="1" @if(old('event_limit') == "1") selected @endif>Recurrent Event</option>
 </select>
 @endif
 <div id="oneEventFields" style="display: {{ old('event_limit', $event_limit ?? '') == '0' ? 'block' : 'none' }}; margin-top: 15px;">
@@ -74,6 +74,9 @@
                         <label for="exampleInputUsername1">Event Name</label>
                         <input type="hidden" name="event_id" value="{{$event_id}}">
                         <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Type your event name" name="event_name" value="{{$event_name}}" >
+                        @error('event_name')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                         </div>
                        
                     </div>
@@ -89,6 +92,9 @@
                         <option value="4" {{ $event_type == 4 ? 'selected' : '' }}>Fashion shows</option>
                         <option value="5" {{ $event_type == 5 ? 'selected' : '' }}>Festivals</option>
                     </select>
+                    @error('event_type')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                         </div>
                      
                         </div> 
@@ -100,6 +106,9 @@
     <div class="form-group">
         <label for="start_date">Start Date</label>
         <input type="date" class="form-control" id="start_date" name="start_date" value="{{ old('start_date', $start_date ?? '') }}">
+        @error('start_date')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
     </div>
 </div>
 
@@ -107,6 +116,9 @@
     <div class="form-group">
         <label for="end_date">End Date</label>
         <input type="date" class="form-control" id="end_date" name="end_date" value="{{ old('end_date', $end_date ?? '') }}">
+        @error('end_date')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
     </div>
 </div>
 
@@ -125,6 +137,9 @@
                         <div class="form-group">
                         <label for="exampleInputUsername1">Start Time:</label>
                         <input type="time" class="form-control" id="exampleInputUsername1" placeholder="Choose event type" name="start_time" value="{{$start_time}}">
+                        @error('start_time')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                         </div>
                </div>
 
@@ -132,6 +147,9 @@
                         <div class="form-group">
                         <label for="exampleInputUsername1">End Time:</label>
                         <input type="time" class="form-control" id="exampleInputUsername1" placeholder="Add address here" name="end_time" value="{{$end_time}}">
+                        @error('end_time')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                         </div>
                     </div>
 
@@ -143,12 +161,18 @@
                         <div class="form-group">
                         <label for="exampleInputUsername1">Select Address</label>
                         <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Add address here" name="address" value="{{$address}}">
+                        @error('address')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                         </div>
                     </div> 
                     <div class="col-md-6">
                         <div class="form-group">
                         <label for="exampleInputUsername1">Ticket Price</label>
                         <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Enter price" name="price" value="{{$price}}">
+                        @error('price')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                         </div>
                     </div>
 
@@ -160,6 +184,9 @@
          <div class="form-group">
         <label for="ticket_quantity">No. of Tickets</label>
         <input type="number" class="form-control" id="ticket_quantity" name="ticket_quantity" min="1" value="{{ old('ticket_quantity', $ticket_quantity ?? 1) }}">
+        @error('ticket_quantity')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
     </div>
     </div>
 
@@ -186,6 +213,9 @@
                     <div class="form-group mb-3">
                         <label for="message" class="form-label">Event Description</label>
                         <textarea class="form-control" id="message" rows="5" placeholder="Type your event description..." name="description">{{$description}}</textarea>
+                        @error('description')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
                 </div>
 
@@ -206,6 +236,9 @@
                         <label for="exampleInputUsername1">Event Name</label>
                         <input type="hidden" name="event_id" value="{{$event_id}}">
                         <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Type your event name" name="event_name" value="{{$event_name}}" >
+                        @error('event_name')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                         </div>
                        
                     </div>
@@ -219,6 +252,9 @@
                         @endforeach
                         
                     </select>
+                    @error('event_type')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                         </div>
                      
                         </div> 
@@ -229,6 +265,9 @@
                         <div class="form-group">
                         <label for="exampleInputUsername1">Select Address</label>
                         <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Add address here" name="address" value="{{$address}}">
+                        @error('address')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                         </div>
                     </div>
 
@@ -268,6 +307,9 @@
 @endforeach
 
             </div>
+            @error('event_days')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
         </div>
 
                    <!--  <div class="col-md-6">
@@ -284,6 +326,9 @@
     <div class="form-group">
         <label for="start_date">Start Date</label>
         <input type="date" class="form-control" id="start_date" name="start_date" value="{{ old('start_date', $start_date ?? '') }}">
+        @error('start_date')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
     </div>
 </div>
 
@@ -291,6 +336,9 @@
     <div class="form-group">
         <label for="end_date">End Date</label>
         <input type="date" class="form-control" id="end_date" name="end_date" value="{{ old('end_date', $end_date ?? '') }}">
+        @error('end_date')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
     </div>
 </div>
 
@@ -301,12 +349,18 @@
                         <div class="form-group">
                         <label for="exampleInputUsername1">Start Time:</label>
                         <input type="time" class="form-control" id="exampleInputUsername1" placeholder="Choose event type" name="start_time" value="{{$start_time}}">
+                        @error('start_time')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                         <label for="exampleInputUsername1">End Time:</label>
                         <input type="time" class="form-control" id="exampleInputUsername1" placeholder="Add address here" name="end_time" value="{{$end_time}}">
+                        @error('end_time')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                         </div>
                     </div>
                     
@@ -340,6 +394,9 @@
 <option value="600" {{ $duration == 600 ? 'selected' : '' }}>10 hours</option>
 
 </select>
+@error('duration')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -357,6 +414,9 @@
                         <div class="form-group">
                         <label for="exampleInputUsername1">Ticket Price</label>
                         <input type="number" class="form-control" id="exampleInputUsername1" placeholder="Enter price" name="price" value="{{$price}}">
+                        @error('price')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                         </div>
                     </div>
 
@@ -364,6 +424,9 @@
          <div class="form-group">
         <label for="ticket_quantity">No. of Tickets</label>
         <input type="number" class="form-control" id="ticket_quantity" name="ticket_quantity" min="1" value="{{ old('ticket_quantity', $ticket_quantity ?? 1) }}">
+        @error('ticket_quantity')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
     </div>
     </div>
 
@@ -431,6 +494,9 @@
                     <div class="form-group mb-3">
                         <label for="message" class="form-label">Event Description</label>
                         <textarea class="form-control" id="message" rows="5" placeholder="Type your event description..." name="description">{{$description}}</textarea>
+                        @error('description')
+                        <small class="text-danger">{{$message}}</small>
+                        @enderror
                     </div>
                 </div>
 
@@ -438,6 +504,7 @@
             </form>
    
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('eventTypeDropdown');
