@@ -75,7 +75,7 @@
         {{ \Carbon\Carbon::parse($event->date_time)->format('F d, Y - h:i A') }}
     </td>
     <td>{{ $event->address }}</td>
-    <td>₹{{ $event->price }}</td>
+    <td>${{ $event->price }}</td>
     <td>
 
     @if($event->event_limit == 0)

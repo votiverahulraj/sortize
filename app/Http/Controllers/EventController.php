@@ -34,7 +34,26 @@ class EventController extends Controller
 
     public function addEvent(Request $request, $id = null)
     {
-        // dd($request->all());
+        $rules = [
+            "event_name" => "required|string",
+            "event_limit" => "required",
+            "event_type" => "required",
+            "start_date" => "required|date|after_or_equal:today",
+            "end_date" => "required|date|after_or_equal:today",
+            "address" => "required",
+            "ticket_quantity" => "required|integer|min:1",
+            "price" => "required|numeric",
+            "start_time" => "required",
+            "end_time" => "required",
+            "description" => "required",
+        ];
+        if($request->event_limit == "1"){
+            $rules['event_days'] = "required|array";
+            $rules['duration'] = "required";
+
+        }
+        $request->validate($rules);
+
         $user = Auth::user();
         $user_id = $user->id;
 
