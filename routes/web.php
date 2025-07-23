@@ -180,6 +180,9 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/admin/booking-list',[AdminController::class,'bookingList'])->name('admin.booking-list');
     // 22-07-2025
     Route::get('/admin/view-booking/{id?}', [AdminController::class, 'viewBooking'])->name('admin.viewBookings');
+    // 23-07-2025
+    Route::get('admin/slot/{id}/bookings', [AdminController::class, 'slotUserList'])->name('admin.slot.users');
+
 
 
 
