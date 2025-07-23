@@ -127,7 +127,7 @@ class UserManagementController extends Controller
         }
         return view('admin.view_user_profile', compact('user_detail', 'enquiry'));
     }
-    public function coachList()
+    public function interpriseList()
     {
         
         $users = DB::table('users')
@@ -135,22 +135,27 @@ class UserManagementController extends Controller
             ->where('is_deleted', 0)
             ->orderBy('id', 'DESC')
             ->paginate(20);
-        return view('admin.coach_list', compact('users'));
+        return view('admin.interprise_list', compact('users'));
     }
-    public function addCoach(Request $request, $id = null)
+    public function addInterprise(Request $request)
     {
+            $id=null;
+            if(isset($request->user_id) && !empty($request->user_id)){
+                $id = $request->user_id;
+            }
+            $rules = [
+                "company_type" => "required",
+                "first_name" => "required|string",
+                "last_name" => "required|string",
+                "email" => "required|email|unique:users,email" . ($id ? ",$id" : ""),
+                "contact_number" => "required|integer|digits:10",
+            ];
 
-    //   $email = $request->email; 
+            if (!$id) {
+                $rules['password'] = 'required|string|min:5|confirmed';
+            } 
+             $validated = $request->validate($rules);
 
-    // if (User::where('email', $email)->exists()) {
-
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'Email already exists.'
-    //     ]);
-    // }
-         if ($request->isMethod('post')) {
-      
             $user = User::find($request->user_id);
             if (!$user) {
                 $user = new User();
@@ -174,17 +179,8 @@ class UserManagementController extends Controller
             $user->created_at       = date('Y-m-d H:i:s');
             $user->save();
 
-             return redirect()->route("admin.coachList")->with("success", "Coach profile updated successfully.");
+             return redirect()->route("admin.interpriseList")->with("success", "Interprise profile updated successfully.");
 
-   //           if ($request->ajax()) {
-   //      return response()->json([
-   //          'success' => true,
-   //          'message' => 'User profile updated successfully.',
-   //          'isEdit' => true,
-   //          'redirect' => route('admin.coachList')
-   //      ]);
-   // }
-        }
 
         // return view('admin.add_coach', compact('category', 'mode', 'type', 'subtype', 'country', 'user_detail', 'state', 'city', 'profession', 'language', 'service', 'selectedServiceIds', 'selectedLanguageIds'));
     }
@@ -259,7 +255,7 @@ class UserManagementController extends Controller
                 }
             }
 
-            return redirect()->route("admin.coachList")->with("success", "Professional profile updated successfully.");
+            return redirect()->route("admin.interpriseList")->with("success", "Professional profile updated successfully.");
         }
         return view('admin.add_professional', compact('user_detail', 'profession', 'document'));
     }
@@ -282,15 +278,12 @@ class UserManagementController extends Controller
 
         return response()->json(['success' => false]);
     }
-    public function coachProfile(Request $request, $id = null)
+    public function interpriseProfile(Request $request, $id = null)
     {
 
        $user_detail = DB::table('users')->where('id', $id)->first();
-
-
-       //dd($user_detail);
           
-        return view('admin.coach_profile',compact('user_detail'));
+        return view('admin.interprise_profile',compact('user_detail'));
     }
     public function viewCoach($id)
     {

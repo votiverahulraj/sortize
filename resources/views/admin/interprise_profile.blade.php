@@ -33,13 +33,13 @@
                     ?>
                     <div class="card">
                         <div class="card-body">
-                            <a href="{{ route('admin.coachList') }}" class="btn btn-outline-info btn-fw"
-                                style="float: right;">Interprise List</a>
+                            <a href="{{ route('admin.interpriseList') }}" class="btn btn-outline-info btn-fw"
+                                style="float: right;">Back</a>
                             <h4 class="card-title">Interprise Management</h4>
                             
                             <div class="tab-content">
                                 <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
-<form class="forms-sample" action="{{ route('admin.addCoach') }}" method="POST"  id="interprise" enctype="multipart/form-data">
+<form class="forms-sample" action="{{ route('admin.addInerprise') }}" method="POST"  id="interprise" enctype="multipart/form-data">
 {!! csrf_field() !!}
 <div class="row">
 @php
@@ -55,6 +55,9 @@
     <option value="1" {{ $selectedCompanyType == '1' ? 'selected' : '' }}>Individual</option>
     <option value="2" {{ $selectedCompanyType == '2' ? 'selected' : '' }}>Legal Entity</option>
   </select>
+   @error('company_type')
+    <small class="text-danger">{{$message}}</small>
+    @enderror
 </div>
 
      @if(!empty($user_detail->company_type) && $user_detail->company_type == '2')
@@ -70,39 +73,56 @@
   @endif
     <div class="form-group col-md-6">
     <label style="width: 250px;" class="mb-0 mr-2">First Name</label>
-     <input type="hidden" name="user_id" value="{{$user_id}}">
-    <input type="text" class="form-control form-control-sm" name="first_name" id="first_name" value="{{$first_name}}" required>
+     <input type="hidden" name="user_id" value="{{$user_id}}" >
+    <input type="text" class="form-control form-control-sm" autocomplete="off" name="first_name" id="first_name" value="{{ $first_name == '' ? old('first_name') : $first_name}}">
+    @error('first_name')
+    <small class="text-danger">{{$message}}</small>
+    @enderror
   </div>
 
   <!-- Last Name -->
   <div class="form-group col-md-6">
     <label style="width: 250px;" class="mb-0 mr-2">Second Name</label>
-    <input type="text" class="form-control form-control-sm" name="last_name" id="last_name" value="{{$last_name}}" required>
+    <input type="text" class="form-control form-control-sm" name="last_name" autocomplete="off" id="last_name" value="{{$last_name == '' ? old('last_name') : $last_name}}" >
+     @error('last_name')
+    <small class="text-danger">{{$message}}</small>
+    @enderror
   </div>
 
   <!-- Email -->
   <div class="form-group col-md-6">
     <label style="width: 250px;" class="mb-0 mr-2">Email Address</label>
-    <input type="email" class="form-control form-control-sm" name="email" id="email" value="{{$email}}" required>
+    <input type="email" class="form-control form-control-sm" name="email" autocomplete="off" id="email" value="{{$email == '' ? old('email') : $email}}">
+     @error('email')
+    <small class="text-danger">{{$message}}</small>
+    @enderror
   </div>
 
   <!-- Contact Number -->
   <div class="form-group col-md-6">
     <label style="width: 250px;" class="mb-0 mr-2">Contact Number</label>
-    <input type="number" class="form-control form-control-sm" name="contact_number" id="contact_number" value="{{$contact_number}}" required>
+    <input type="number" class="form-control form-control-sm" name="contact_number" id="contact_number" value="{{$contact_number == '' ? old('contact_number') : $contact_number}}" >
+     @error('contact_number')
+    <small class="text-danger">{{$message}}</small>
+    @enderror
   </div>
 
   <!-- Password -->
+   @if($user_id == "")
   <div class="form-group col-md-6">
     <label style="width: 250px;" class="mb-0 mr-2">Password</label>
     <input type="password" class="form-control form-control-sm" name="password" id="password" >
+     @error('password')
+    <small class="text-danger">{{$message}}</small>
+    @enderror
   </div>
 
   <!--  Confirm Password -->
   <div class="form-group col-md-6">
     <label style="width: 250px;" class="mb-0 mr-2">Confirm Password</label>
     <input type="password" class="form-control form-control-sm" name="password_confirmation" id="password_confirmation" >
-  </div> 
+  </div>
+  @endif 
 
   <!-- Website Link -->
   <div class="form-group col-md-6">
@@ -136,94 +156,7 @@
     </div>
     <!-- main-panel ends -->
 @endsection
- <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
-<!-- jQuery Validation plugin -->
-<!-- <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script> -->
-<!-- <script src="{{ url('/public') }}/js/jquery.validate.min.js"></script> -->
-<!-- Now set $j after both are loaded -->
-<!-- <script>
-  var $j = jQuery.noConflict();
-</script>
-<script>
-   $j(document).ready(function () {
- 
-    $j('#interprise').validate({
-    rules: {
-      first_name: { required: true, minlength: 2 },
-      last_name: { required: true, minlength: 2 },
-      email: { required: true, email: true },
-      password: { required: true, minlength: 6 },
-      password_confirmation: { required: true, minlength: 6, equalTo: "#password" },
-      city_id: { required: true,  },
-    },
-    messages: {
-      first_name: "Enter first name",
-      last_name: "Enter last name",
-      email: {
-        required: "Email is required",
-        email: "Enter a valid email"
-      },
-      password: {
-          required: !isEdit, // only required when creating
-          minlength: isEdit ? 0 : 6
-        },
-        password_confirmation: {
-          required: function () {
-            return !isEdit || $j('#password').val().length > 0;
-          },
-          minlength: 6,
-          equalTo: "#password"
-        },
-     
-      city_id: "Select city"
-     
-    },
-      submitHandler: function(form) {
-      console.log("Validation passed, submitting form");
-      var formData = new FormData(form);
-      
-      var email = $j('#email').val();
-      formData.append('email', email);
-      $j.ajax({
-        url: "{{ route('admin.addCoach') }}",
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-          
-          if (response.success) {
-            $j('#responseMessage')
-              .html('<div class="alert alert-success">' + response.message + '</div>');
-              window.location.href = response.redirect;
-            form.reset();
-          } else {
-            $j('#responseMessage')
-              .html('<div class="alert alert-danger">' + response.message + '</div>');
-          }
-          
-        },
-        error: function(xhr) {
-           let res = xhr.responseJSON;
-          if (res && res.errors) {
-            let messages = Object.values(res.errors).map(e => e[0]).join("<br>");
-            $j('#responseMessage')
-              .html('<div class="alert alert-danger">' + messages + '</div>');
-          } else {
-            $j('#responseMessage')
-              .html('<div class="alert alert-danger">An unexpected error occurred.</div>');
-          }
-           errorClass: "error"
-        }
-       
-      });
-
-      return false;
-    }
-  });
-});
-</script> -->
 @push('scripts')
     <script>
 

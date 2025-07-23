@@ -77,11 +77,11 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/userList', [UserManagementController::class, 'userList'])->name('admin.userList');
     Route::any('/admin/addUser/{id?}', [UserManagementController::class, 'addUser'])->name('admin.addUser');
-    Route::get('/admin/coachList', [UserManagementController::class, 'coachList'])->name('admin.coachList');
-    Route::any('/admin/addCoach/{id?}', [UserManagementController::class, 'addCoach'])->name('admin.addCoach');
+    Route::get('/admin/inerprise-list', [UserManagementController::class, 'interpriseList'])->name('admin.interpriseList');
+    Route::post('/admin/add-interprise', [UserManagementController::class, 'addInterprise'])->name('admin.addInerprise');
     Route::post('/admin/update_status', [UserManagementController::class, 'updateUserStatus']);
     Route::post('/admin/delete_user', [UserManagementController::class, 'deleteUser']);
-    Route::get('/admin/coachProfile/{id?}', [UserManagementController::class, 'coachProfile'])->name('admin.coachProfile');
+    Route::get('/admin/interprise/{id?}', [UserManagementController::class, 'interpriseProfile'])->name('admin.interprisePro');
     Route::get('/admin/viewCoach/{id}', [UserManagementController::class, 'viewCoach'])->name('admin.viewCoach');
     Route::get('/admin/viewUser/{id}', [UserManagementController::class, 'viewUser'])->name('admin.viewUser');
     Route::get('/admin/view_user_enquiry/{id}', [UserManagementController::class, 'view_user_enquiry'])->name('admin.view_user_enquiry');
@@ -122,7 +122,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
 
 
-    Route::any('/admin/addCoachType/{id?}', [MasterController::class, 'addCoachType'])->name('admin.addCoachType');
+   
     Route::get('/admin/coachTypeList', [MasterController::class, 'coachTypeList'])->name('admin.coachTypeList');
     Route::post('/admin/update_type_status', [MasterController::class, 'updateTypeStatus']);
     Route::any('/admin/addCoachSubType/{id?}', [MasterController::class, 'addCoachSubType'])->name('admin.addCoachSubType');

@@ -36,7 +36,7 @@
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{route('admin.userList')}}">User List</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{route('admin.coachList')}}">Interprise List</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('admin.interpriseList')}}">Interprise List</a></li>
 
         </ul>
       </div>

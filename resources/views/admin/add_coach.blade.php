@@ -44,7 +44,7 @@
                 ?>
                 <div class="card">
                   <div class="card-body">
-                    <a href="{{route('admin.coachList')}}" class="btn btn-outline-info btn-fw" style="float: right;">Coach List</a>
+                    <a href="{{route('admin.interpriseList')}}" class="btn btn-outline-info btn-fw" style="float: right;">Coach List</a>
                     <h4 class="card-title">Coach Management</h4>
                     <p class="card-description"> Add / Update coach  </p>
                     <form class="forms-sample" method="post" action="{{route('admin.addCoach')}}" enctype="multipart/form-data">

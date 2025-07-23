@@ -15,7 +15,7 @@
               <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                  <!-- <a href="{{route('admin.coachProfile')}}" class="btn btn-outline-info btn-fw" style="float: right;">Add Coach</a> -->
+                  <!-- <a href="{{route('admin.interprisePro')}}" class="btn btn-outline-info btn-fw" style="float: right;">Add Coach</a> -->
                     <h4 class="card-title">Review Management ????</h4>
                     <p class="card-description"> Review List
                     </p>
