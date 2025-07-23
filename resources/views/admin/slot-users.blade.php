@@ -25,6 +25,7 @@
     <div class="main-panel">
         @php
             $event_name = '';
+            $eventId = '';
             if (isset($bookings) && $bookings->isNotEmpty()) {
                 $event = $bookings->first()->event;
                 $event_name = $event->event_name ?? '';
