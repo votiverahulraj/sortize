@@ -7,7 +7,7 @@
                 <div class="col-md-12 grid-margin">
                     <div class="row">
                         <div class="col-12">
-                            @include('admin.partial.breadcrumbs', [
+                            @include('admin.partials.breadcrumbs', [
                                 'title' => 'Booking List',
                                 'breadcrumbs' => [['label' => 'Booking List']],
                             ])
