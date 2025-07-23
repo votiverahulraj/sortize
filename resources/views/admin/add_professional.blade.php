@@ -41,7 +41,7 @@
                 ?>
                 <div class="card">
                   <div class="card-body">
-                    <a href="{{route('admin.coachList')}}" class="btn btn-outline-info btn-fw" style="float: right;">Coach List</a>
+                    <a href="{{route('admin.interpriseList')}}" class="btn btn-outline-info btn-fw" style="float: right;">Coach List</a>
                     <h4 class="card-title">User Management</h4>
                     <p class="card-description"> Add / Update Professional  </p>
                     <p>Coach : {{$first_name.' '.$last_name}}</p>

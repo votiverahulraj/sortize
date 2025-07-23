@@ -25,7 +25,7 @@
                     ?>
                 <div class="card">
                   <div class="card-body">
-                      <a href="{{route('admin.coachList')}}" class="btn btn-outline-info btn-fw" style="float: right;">Interprise List</a>
+                      <a href="{{route('admin.interpriseList')}}" class="btn btn-outline-info btn-fw" style="float: right;">Interprise List</a>
                       <h4 class="card-title">Interprise Management</h4>
                       <!--p class="card-description"> Add / Update Blog  </p-->
 

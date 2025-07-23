@@ -15,8 +15,8 @@
               <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                  <a href="{{route('admin.coachProfile')}}" class="btn btn-outline-info btn-fw" style="float: right;">Add Interprise</a>
-                    <h4 class="card-title">User Management</h4>
+                  <a href="{{route('admin.interprisePro')}}" class="btn btn-outline-info btn-fw" style="float: right;">Add Interprise</a>
+                    <h4 class="card-title">Interprise Management</h4>
                     <p class="card-description"> Interprise List
                     </p>
 
@@ -55,7 +55,7 @@
                                  <td><a href="{{url('/admin/servicePackageList')}}/{{$list->id}}" class='btn btn-success'>Packages List</a></td>
                               <td>
                                 <a href="javascript:void(0)" class="del_user" user_id="{{$list->id}}"><i class="mdi mdi-delete"></i></a> |
-                                <a href="{{route('admin.coachProfile')}}/{{ $list->id }}"><i class="mdi mdi-lead-pencil"></i></a> |
+                                <a href="{{route('admin.interprisePro')}}/{{ $list->id }}"><i class="mdi mdi-lead-pencil"></i></a> |
                                 <a href="{{ route('admin.viewCoach', ['id' => $list->id]) }}"><i class="mdi mdi mdi-eye"></i></a>
                                 <!--a href="{{route('admin.addProfessional')}}/{{ $list->id }}"><i class="mdi mdi-professional-hexagon"></i></a-->
                               </td>
