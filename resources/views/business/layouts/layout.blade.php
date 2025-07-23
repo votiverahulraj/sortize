@@ -99,6 +99,10 @@
       </li>
 
     </ul>
+	
+	<button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center add-open-close" type="button">
+      <span class="icon-menu"></span>
+    </button>
 
   </div>
 </nav>
@@ -144,6 +148,23 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script> -->
     <script src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.0/js/dataTables.bootstrap5.js"></script>
+	
+	<script>
+  $('.add-open-close').on('click', function () {
+    $('#sidebar').toggleClass('active');
+  });
+</script>
+<script>
+  $(document).on('click', function (e) {
+    const sidebar = $('#sidebar');
+    const toggleButton = $('.add-open-close');
+
+    if (!sidebar.is(e.target) && sidebar.has(e.target).length === 0 &&
+        !toggleButton.is(e.target) && toggleButton.has(e.target).length === 0) {
+      sidebar.removeClass('active');
+    }
+  });
+</script>
  
     <!-- End custom js for this page-->
     @stack('scripts')

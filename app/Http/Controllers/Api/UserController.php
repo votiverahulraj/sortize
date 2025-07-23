@@ -974,6 +974,7 @@ public function professional_title()
                     'event_slots' => $EventSlots,
                     'joined_members' => $JoinedMembers,
                     'joined_members_count' => count($JoinedMembers),
+                    'commission_price' => "10"
                 ];
             }
 
