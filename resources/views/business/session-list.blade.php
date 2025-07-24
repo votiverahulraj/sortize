@@ -43,10 +43,11 @@
     </a> -->
 
             <div class="row mb-3">
-
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle text-center">
-                        <thead class="table-dark">
+<div class="card">
+  <div class="card-body">
+     <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center" id="slotlist">
+                        <thead class="table-secondary">
                             <tr>
                                 <th>S no.</th>
                                 <th>Date</th>
@@ -55,6 +56,7 @@
                                 <th>Capacity</th>
                                 <th>Status</th>
                                 <th>Actions</th>
+                                <th>view Bookings</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -87,15 +89,22 @@
                                           </a>
 
                                       </td>
+                                      <td> <a href="{{ route('interprise.slot.users',['id' => $session->id]) }}">
+                                              <i class="mdi mdi mdi-eye"></i>
+                                          </a></td>
                                     </tr>
                                 @endforeach
                             @endif
                         </tbody>
                     </table>
                     <div class="d-flex add-pagination mt-4">
-                        {{ $sessionlist->links('pagination::bootstrap-4') }}
+                        {{-- {{ $sessionlist->links('pagination::bootstrap-4') }} --}}
                     </div>
                 </div>
+
+  </div>
+</div>
+
             </div>
         </div>
 
@@ -185,3 +194,54 @@
             });
         });
     </script>
+
+
+ @push('scripts')
+        <script>
+            $(document).ready(function() {
+                $('#slotlist').DataTable({
+                    layout: {
+                        topStart: {
+                            buttons: [{
+                                    extend: 'copy',
+                                    className: 'btn btn-primary custom-dt-btn'
+                                },
+                                {
+                                    extend: 'csv',
+                                    className: 'btn  btn-primary custom-dt-btn'
+                                },
+                                {
+                                    extend: 'excel',
+                                    className: 'btn btn-primary custom-dt-btn'
+                                },
+                                {
+                                    extend: 'pdf',
+                                    className: 'btn  btn-primary custom-dt-btn'
+                                },
+                                {
+                                    extend: 'print',
+                                    className: 'btn btn-primary custom-dt-btn'
+                                }
+                            ]
+                        },
+
+                    },
+
+
+                    paging: true,
+                    info: true,
+                    responsive: true,
+                    initComplete: function() {
+                        // Wrap .dt-buttons in a Bootstrap .btn-group
+                        let $buttons = $('.dt-buttons');
+                        if (!$buttons.hasClass('btn-group')) {
+                            $buttons.addClass('btn-group').attr('role', 'group');
+                        }
+
+                        // Optional: adjust parent container
+                        // $buttons.closest('.dt-layout-start').addClass('mb-3'); // spacing below buttons
+                    }
+                });
+            });
+        </script>
+    @endpush

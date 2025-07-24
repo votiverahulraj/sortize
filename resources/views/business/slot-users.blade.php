@@ -1,11 +1,12 @@
-@extends('admin.layouts.layout')
+@extends('business.layouts.layout')
 
 <style>
      .form-control-sm {
         padding: 0.45rem .5rem !important;
     }
     .badge-cust {
-        padding: 5px 10px;
+
+        padding: 1px 9px;
         font-size: 14px;
         border-radius: 20px;
 
@@ -13,15 +14,22 @@
     .card .card-body {
         padding: 0.25rem 0.25rem !important;
     }
+
+    #bookingtable thead th {
+    text-align: center !important;
+    }
+
 </style>
 
 @section('content')
     <div class="main-panel">
         @php
             $event_name = '';
-            if ($bookings->isNotEmpty()) {
+            $eventId='';
+            if (isset($bookings) && $bookings->isNotEmpty()) {
                 $event = $bookings->first()->event;
                 $event_name = $event->event_name ?? '';
+                $eventId= $bookings->first()->event_id ?? '';
             }
         @endphp
         <div class="content-wrapper">
@@ -30,7 +38,8 @@
                     @include('admin.partials.breadcrumbs', [
                         'title' => 'Booking List',
                         'breadcrumbs' => [
-                            ['label' => 'Booking List', 'url' => route('admin.event-list')],
+                            ['label' => 'event list', 'url' => route('interprise.event-list')],
+                            ['label' => 'slot list', 'url' => route('interprise.session-list',['id'=>$eventId])],
                             ['label' => $event_name],
                         ],
                     ])
@@ -51,8 +60,8 @@
                                     <tr>
 
                                         <th scope="col">S No</th>
-                                        <th scope="col">User Name</th>
-                                        <th scope="col">Event Name</th>
+                                        <th scope="col">User </th>
+                                        <th scope="col">Event </th>
                                         <th scope="col">Event Slot</th>
                                         <th scope="col">Ticket Qty</th>
                                         <th scope="col">Price</th>
@@ -73,7 +82,8 @@
                                             5 => 'Festivals',
                                         ];
                                     @endphp
-                                    <!-- 10 Sample Booking Rows -->
+
+
                                     @if ($bookings)
                                         @php $i=1; @endphp
                                         @foreach ($bookings as $booking)
@@ -92,9 +102,8 @@
 
                                                 <td>{{ $booking->ticket_quantity }}</td>
                                                 <td>{{ $booking->total_price }}</td>
-                                                {{-- <td>{{ ucfirst($booking->payment_status) }}</td> --}}
+
                                                 <td>
-                                                    {{-- <label class="badge-cust badge-outline-primary">{{ ucfirst($booking->payment_status) }}</label> --}}
                                                     <label class="badge-cust
                                                         @if($booking->payment_status === 'success') badge-outline-success
                                                         @elseif($booking->payment_status === 'pending') badge-outline-warning
@@ -174,7 +183,8 @@
 
                         // Optional: adjust parent container
                         // $buttons.closest('.dt-layout-start').addClass('mb-3'); // spacing below buttons
-                    }
+                    },
+
                 });
             });
         </script>

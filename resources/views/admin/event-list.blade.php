@@ -7,6 +7,32 @@
     .card .card-body {
         padding: 0.25rem 0.25rem !important;
     }
+
+   @media (max-width: 480px) {
+    .buttons-print,
+    .buttons-copy,
+    .buttons-csv {
+        display: none !important;
+    }
+    .dt-layout-start{
+        margin: 10px;
+    }
+    .buttons-pdf{
+        background: linear-gradient(135deg,#f79ae6, #00d0ffa1 ) !important;
+        border: none !important;
+        border-radius: 5px !important;
+        margin-right: 8px !important;
+    }
+    .buttons-excel{
+          background: linear-gradient(135deg,#f79ae6, #00d0ffa1 ) !important;
+          border: none !important;
+          border-radius: 5px !important;
+          margin-left: 8px !important;
+    }
+
+
+    }
+
 </style>
 
 @section('content')
