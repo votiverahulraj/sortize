@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -485,17 +485,16 @@ class AdminController extends Controller
         return view('admin.view-booking', compact('bookings'));
     }
 
-    public function slotUserList($slotId=null)
+    public function slotUserList($slotId = null)
     {
         // dd($slotId);
         $bookings = Booking::with(['user:id,first_name,last_name', 'event:id,event_name', 'slot:id,date,start_time,end_time'])
-        ->where('event_slot_id', $slotId)
-        ->get();
+            ->where('event_slot_id', $slotId)
+            ->get();
 
         // dd($bookings);
 
         // return view('admin.slot-users');
-          return view('admin.slot-users', compact('bookings'));
+        return view('admin.slot-users', compact('bookings'));
     }
-
 }

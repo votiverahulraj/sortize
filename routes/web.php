@@ -28,7 +28,7 @@ Route::post('/admin/getsubType', [AdminController::class, 'getsubType']);
 
 // Interprise bussiness user routes
 
-Route::group([], function(){
+Route::group([], function () {
     Route::get('/signup', [BusinessController::class, 'signup'])->name('bussiness.signup');
     Route::post('/store', [BusinessController::class, 'enerpriseStore'])->name('bussiness.store');
     Route::get('/login', [BusinessController::class, 'login'])->name('bussiness.login');
@@ -47,13 +47,14 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     Route::any('/create-event', [EventController::class, 'createEvent'])->name('create-event');
     Route::post('/add-event/{id?}', [EventController::class, 'addEvent'])->name('add-event');
     Route::get('/edit-event/{id?}', [EventController::class, 'editEvent'])->name('edit-event');
-    Route::any('/event-list', [EventController::class, 'eventList'])->name('event-list');
+    Route::get('/event-list', [EventController::class, 'eventList'])->name('event-list');
+    Route::get('/past-events', [EventController::class, 'pastEvents'])->name('past-events');
     Route::get('/view-event/{id?}', [EventController::class, 'viewEvent'])->name('view-event');
     Route::post('/delete_event', [EventController::class, 'delete'])->name('delete_event');
     // Ticket routes
     Route::any('/create-ticket', [BusinessController::class, 'createTicket'])->name('create-ticket');
     Route::any('/ticket-list', [BusinessController::class, 'ticketList'])->name('ticket-list');
-   // Route::any('/session-list/{id?}',[EventController::class,'SessionList'])->name('interprise.session-list');
+    // Route::any('/session-list/{id?}',[EventController::class,'SessionList'])->name('interprise.session-list');
     Route::any('/session-list/{id}', [EventController::class, 'SessionList'])->name('session-list');
     Route::any('/generateSlots/{id?}', [EventController::class, 'generateSessions'])->name('generateSessions');
     //20-07-2025
@@ -61,9 +62,8 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     Route::post('/update-session/{id}', [EventController::class, 'updateSession'])->name('update-session');
     //21-07-2025
     Route::post('/session_status', [EventController::class, 'session_status'])->name('session_status');
-    Route::get('/booking-list',[BookingController::class,'bookingList'])->name('booking-list');
+    Route::get('/booking-list', [BookingController::class, 'bookingList'])->name('booking-list');
     Route::get('/view-booking/{id?}', [BookingController::class, 'viewBooking'])->name('view-booking');
-
 });
 
 // Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
@@ -128,7 +128,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
 
 
-   
+
     Route::get('/admin/coachTypeList', [MasterController::class, 'coachTypeList'])->name('admin.coachTypeList');
     Route::post('/admin/update_type_status', [MasterController::class, 'updateTypeStatus']);
     Route::any('/admin/addCoachSubType/{id?}', [MasterController::class, 'addCoachSubType'])->name('admin.addCoachSubType');
@@ -165,31 +165,27 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::post('/admin/enquiry_status', [UserManagementController::class, 'enquiry_status']);
 
     // event start //
-      Route::any('/admin/addEvent/{id?}', [AdminController::class, 'addEvent'])->name('admin.addEvent');
-      Route::post('/admin/createEvent/{id?}', [AdminController::class, 'createEvent'])->name('admin.createEvent');
-      Route::any('/admin/event-list', [AdminController::class, 'eventList'])->name('admin.event-list');
-      Route::get('/admin/edit-event/{id?}', [AdminController::class, 'editEvent'])->name('admin.edit-event');
-      Route::get('/admin/view-event/{id?}', [AdminController::class, 'viewEvent'])->name('admin.view-event');
-      Route::post('/admin/event_update_status', [AdminController::class, 'updateEventStatus']);
+    Route::any('/admin/addEvent/{id?}', [AdminController::class, 'addEvent'])->name('admin.addEvent');
+    Route::post('/admin/createEvent/{id?}', [AdminController::class, 'createEvent'])->name('admin.createEvent');
+    Route::any('/admin/event-list', [AdminController::class, 'eventList'])->name('admin.event-list');
+    Route::get('/admin/edit-event/{id?}', [AdminController::class, 'editEvent'])->name('admin.edit-event');
+    Route::get('/admin/view-event/{id?}', [AdminController::class, 'viewEvent'])->name('admin.view-event');
+    Route::post('/admin/event_update_status', [AdminController::class, 'updateEventStatus']);
 
-      //session start//
+    //session start//
 
-       Route::any('/admin/session-list/{id?}', [AdminController::class, 'sessionList'])->name('admin.session-list');
+    Route::any('/admin/session-list/{id?}', [AdminController::class, 'sessionList'])->name('admin.session-list');
 
-      Route::any('/admin/addSession/{id?}', [AdminController::class, 'addSession'])->name('admin.addSession');
-      Route::any('/admin/generateSessions/{id?}', [AdminController::class, 'generateSessions'])->name('admin.generateSessions');
-      Route::get('/admin/edit-session/{id}', [AdminController::class, 'edit'])->name('admin.session.edit');
-     Route::post('/admin/updateSession/{id}', [AdminController::class, 'update'])->name('admin.updateSession');
-     Route::post('/admin/session_status', [AdminController::class, 'session_status']);
+    Route::any('/admin/addSession/{id?}', [AdminController::class, 'addSession'])->name('admin.addSession');
+    Route::any('/admin/generateSessions/{id?}', [AdminController::class, 'generateSessions'])->name('admin.generateSessions');
+    Route::get('/admin/edit-session/{id}', [AdminController::class, 'edit'])->name('admin.session.edit');
+    Route::post('/admin/updateSession/{id}', [AdminController::class, 'update'])->name('admin.updateSession');
+    Route::post('/admin/session_status', [AdminController::class, 'session_status']);
 
     // 21/07/2025
-    Route::get('/admin/booking-list',[AdminController::class,'bookingList'])->name('admin.booking-list');
+    Route::get('/admin/booking-list', [AdminController::class, 'bookingList'])->name('admin.booking-list');
     // 22-07-2025
     Route::get('/admin/view-booking/{id?}', [AdminController::class, 'viewBooking'])->name('admin.viewBookings');
     // 23-07-2025
     Route::get('admin/slot/{id}/bookings', [AdminController::class, 'slotUserList'])->name('admin.slot.users');
-
-
-
-
 });
