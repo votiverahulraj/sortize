@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use App\Models\Event;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
@@ -39,8 +40,29 @@ class BookingController extends Controller
         return view('admin.booking_slot');
     }
 
+      public function viewBooking($id = null)
+    {
+        $event = Event::where('id', $id)->exists();
 
-    public function viewBooking($id=null)
+        if (!$event) {
+            return redirect()->back()->with('error', 'Event not found.');
+        }
+
+        $bookings = Booking::with(['user:id,first_name,last_name', 'event:id,event_name,address', 'slot:id,date,start_time,end_time'])
+            ->where('event_id', $id)
+            ->get();
+
+            // dd($bookings);
+
+        if (!$bookings) {
+            return redirect()->back()->with('error', 'Booking not found.');
+        }
+
+         return view('business.view_booking', compact('bookings'));
+    }
+
+
+    public function userInfo($id=null)
     {
         $bookingId=$id;
 
@@ -54,7 +76,7 @@ class BookingController extends Controller
             ])
             ->where('id',  $bookingId)
             ->first();
-        //  dd($bookingInfo);
+        //   dd($bookingInfo);
 
 
         if (!$bookingInfo) {
@@ -62,8 +84,24 @@ class BookingController extends Controller
         }
 
 
-         return view('business.view_booking',compact('bookingInfo'));
+         return view('business.user_info',compact('bookingInfo'));
 
+    }
+
+
+     public function slotUserList($slotId=null)
+    {
+
+        $bookings = Booking::with(['user:id,first_name,last_name', 'event:id,event_name', 'slot:id,date,start_time,end_time'])
+        ->where('event_slot_id', $slotId)
+        ->get();
+
+         if (! $bookings) {
+            return redirect()->back()->with('error', 'Booking not found.');
+        }
+
+        // return view('admin.slot-users');
+          return view('business.slot-users', compact('bookings'));
     }
 
     public function store(Request $request)

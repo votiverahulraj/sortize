@@ -206,7 +206,7 @@ class EventController extends Controller
     {
         $eventId = $id;
         $sessionlist = DB::table('session')->where('event_id', $eventId)->orderBy('id', 'asc')->paginate(20);
-        // dd($sessionlist);
+    //  dd($sessionlist);
 
         return view('business.session-list', compact('sessionlist'));
     }

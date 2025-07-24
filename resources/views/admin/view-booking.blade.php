@@ -95,8 +95,12 @@
                                                 {{-- <td>{{ ucfirst($booking->payment_status) }}</td> --}}
                                                 <td>
                                                     {{-- <label class="badge-cust badge-outline-primary">{{ ucfirst($booking->payment_status) }}</label> --}}
-                                                    <label
-                                                        class="badge-cust {{ $booking->payment_status == 'success' ? 'badge-outline-success' : 'badge-outline-primary' }}">
+                                                    <label class="badge-cust
+                                                        @if($booking->payment_status === 'success') badge-outline-success
+                                                        @elseif($booking->payment_status === 'pending') badge-outline-warning
+                                                        @elseif($booking->payment_status === 'failed') badge-outline-danger
+                                                        @else badge-outline-primary
+                                                        @endif">
                                                         {{ ucfirst($booking->payment_status) }}
                                                     </label>
 
