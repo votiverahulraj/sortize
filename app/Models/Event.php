@@ -39,5 +39,16 @@ class Event extends Model
         return $this->belongsTo(EventCategory::class,'event_type');
     }
 
+    public function scopeUpcoming($query)
+    {
+        return $query->where('end_date', '>', now());
+    }
+
+    // Scope for past (expired) events
+    public function scopePast($query)
+    {
+        return $query->where('end_date', '<', now());
+    }
+
 
 }

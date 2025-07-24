@@ -49,7 +49,10 @@
                         <input type="checkbox" class="form-check-input"> Keep me signed in </label>
                     </div-->
                     <a href="#" class="auth-link text-black">Forgot password? test</a>
+                    <a href="{{ route('bussiness.signup') }}" class="auth-link text-black">Signup</a>
                   </div>
+
+                 
                 </form>
                   @if (Session::has('warning'))
                       <div class="alert alert-warning">
