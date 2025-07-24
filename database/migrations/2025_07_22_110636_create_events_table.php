@@ -31,8 +31,6 @@ return new class extends Migration
                 $table->integer('ticket_price')->nullable();
                 $table->time('start_time')->nullable();
                 $table->time('end_time')->nullable();
-                $table->integer('latitude')->nullable();
-                $table->integer('longitude')->nullable();
                 $table->string('duration')->nullable();
                 $table->integer('gap')->nullable();
                 $table->tinyInteger('event_limit')->nullable();
