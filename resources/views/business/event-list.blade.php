@@ -6,8 +6,11 @@
             <div class="row">
               <div class="col-md-12 grid-margin">
                 <div class="row">
-                  <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                    <h3 class="font-weight-bold">Event List</h3>
+                  <div class="col-12 ">
+                    @include('business.partials.breadcrumbs', [
+                        'title' => 'Event List',
+                        'breadcrumbs' => [['label' => 'Event List']],
+                    ])
                   </div>
                 </div>
               </div>
@@ -33,7 +36,7 @@
                 <div class="row mb-3">
 
   <div class="table-responsive">
-    <table class="table table-bordered align-middle text-center">
+    <table class="table table-bordered align-middle text-center" id="eventtable">
       <thead class="table-dark">
         <tr>
            <th scope="col">S No.</th>
@@ -163,3 +166,5 @@
               });
             });
         </script>
+
+

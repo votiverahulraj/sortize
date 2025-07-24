@@ -8,18 +8,6 @@ class Booking extends Model
 {
     protected $table = 'bookings';
 
-        protected $fillable = [
-        'user_id',
-        'event_id',
-        'event_slot_id',
-        'ticket_quantity',
-        'total_price',
-        'payment_status',
-        'payment_method',
-        'booking_status',
-        'booked_at',
-        'is_active'
-    ];
 
     public function user()
     {

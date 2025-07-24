@@ -50,7 +50,6 @@ Route::post('/getSubCoachType/{coach_type_id}', [GuestController::class, 'getAll
 Route::get('/home_page', [UserController::class, 'event_list']);
 Route::post('/EventSlotbyDate', [ApiEventController::class, 'EventSlotbyDate']);
 Route::post('/BlockSlot', [ApiEventController::class, 'BlockSlot']);
-Route::post('/BookingSlot', [ApiEventController::class, 'BookingSlot']);
 
 // VG route end
 
