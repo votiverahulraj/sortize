@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 
 use Illuminate\Http\Request;
-use DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\EventGalleryImage;
@@ -14,6 +13,7 @@ use App\Models\EventSlotModel;
 use App\Models\Session;
 use App\Models\Booking;
 use App\Models\EventCategory;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -49,10 +49,9 @@ class EventController extends Controller
             "end_time" => "required",
             "description" => "required",
         ];
-        if($request->event_limit == "1"){
+        if ($request->event_limit == "1") {
             $rules['event_days'] = "required|array";
             $rules['duration'] = "required";
-
         }
         $request->validate($rules);
 
@@ -157,8 +156,16 @@ class EventController extends Controller
     {
         $user = Auth::user();
         $user_id =  $user->id;
-        // dd($user_id);
-        $eventlist = DB::table('events')->where('user_id', '=', $user_id)->where('is_deleted', '=', 0)->orderBy('id', 'desc')->paginate(20);
+        $eventlist = Event::upcoming()->where('user_id', '=', $user_id)->orderBy('id', 'desc')->paginate(20);
+
+        return view('business.event-list', compact('eventlist'));
+    }
+
+    public function pastEvents()
+    {
+        $user = Auth::user();
+        $user_id =  $user->id;
+        $eventlist = Event::past()->where('user_id', '=', $user_id)->where('is_deleted', '=', 0)->orderBy('id', 'desc')->paginate(20);
 
         return view('business.event-list', compact('eventlist'));
     }
@@ -179,7 +186,7 @@ class EventController extends Controller
         return view('business.create-event', compact('eventdetails', 'eventgallery'));
     }
 
-     public function bookingList()
+    public function bookingList()
     {
         $user = Auth::user();
         $user_id =  $user->id;
@@ -309,7 +316,7 @@ class EventController extends Controller
         //     return redirect()->back()->with('error', 'Invalid data for session creation.');
         // }
 
-         $ticket_quantity = $event->ticket_quantity;
+        $ticket_quantity = $event->ticket_quantity;
         foreach ($weekendDates as $date) {
             foreach ($timeSlots as $slot) {
                 $exists = Session::where('event_id', $eventId)
@@ -329,21 +336,21 @@ class EventController extends Controller
                 //         'status'     => 0,
                 //     ]);
                 // }
-                 if ($exists) {
-                         $session = Session::where('event_id', $eventId)
+                if ($exists) {
+                    $session = Session::where('event_id', $eventId)
                         ->where('date', $date)
                         ->where('start_time', $slot['start'])
                         ->where('end_time', $slot['end'])
                         ->first();
 
-                        if ($session) {
-                            $session->capacity  = $ticket_quantity;
-                            $session->is_active = 1;
-                            $session->status    = 0;
-                            $session->save();
-                        }
-                }else{
-                      Session::create([
+                    if ($session) {
+                        $session->capacity  = $ticket_quantity;
+                        $session->is_active = 1;
+                        $session->status    = 0;
+                        $session->save();
+                    }
+                } else {
+                    Session::create([
                         'event_id'   => $eventId,
                         'date'       => $date,
                         'start_time' => $slot['start'],
@@ -358,11 +365,11 @@ class EventController extends Controller
         return redirect()->route('interprise.session-list', ['id' => $eventId])->with('success', 'Sessions generated successfully!');
     }
 
-    public function editSession($id=null)
+    public function editSession($id = null)
     {
         try {
-             $session=Session::findOrFail($id);
-             $event_id = $session->event_id ?? null;
+            $session = Session::findOrFail($id);
+            $event_id = $session->event_id ?? null;
             return view('business.edit-session', compact('session', 'event_id'));
         } catch (\Throwable $th) {
             // dd("error");session-list
@@ -402,8 +409,7 @@ class EventController extends Controller
     public function session_status(Request $request)
     {
         $user = session::find($request->user);
-        $user->is_active=$request->is_active;
+        $user->is_active = $request->is_active;
         $user->save();
     }
-
 }

@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\NotDeletedScope;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EventCategory;
+
 
 class Event extends Model
 {
     protected $table = 'events';
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new NotDeletedScope);
+    }
 
     public function coach()
     {
@@ -41,14 +48,12 @@ class Event extends Model
 
     public function scopeUpcoming($query)
     {
-        return $query->where('end_date', '>', now());
+        return $query->whereRaw("STR_TO_DATE(CONCAT(end_date, ' ', end_time), '%Y-%m-%d %H:%i:%s') > NOW()");
     }
 
     // Scope for past (expired) events
     public function scopePast($query)
     {
-        return $query->where('end_date', '<', now());
+        return $query->whereRaw("STR_TO_DATE(CONCAT(end_date, ' ', end_time), '%Y-%m-%d %H:%i:%s') <= NOW()");
     }
-
-
 }

@@ -20,8 +20,9 @@
       </a>
        <div class="collapse" id="event-manage">
         <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="{{url('/dashboard/create-event')}}">Create Event</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{url('/dashboard/event-list')}}">Event List</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('interprise.create-event')}}">Create Event</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('interprise.event-list')}}">Event List</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('interprise.past-events')}}">Past Events</a></li>
         </ul>
       </div>
     </li>
