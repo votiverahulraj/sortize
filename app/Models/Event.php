@@ -34,5 +34,16 @@ class Event extends Model
         return $this->hasMany(Booking::class, 'event_id');
     }
 
+    public function scopeUpcoming($query)
+    {
+        return $query->where('end_date', '>', now());
+    }
+
+    // Scope for past (expired) events
+    public function scopePast($query)
+    {
+        return $query->where('end_date', '<', now());
+    }
+
 
 }

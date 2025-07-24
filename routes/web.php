@@ -26,11 +26,17 @@ Route::post('/admin/getstate', [AdminController::class, 'getstate']);
 Route::post('/admin/getcity', [AdminController::class, 'getcity']);
 Route::post('/admin/getsubType', [AdminController::class, 'getsubType']);
 
-Route::any('/register', [BusinessController::class, 'signup'])->name('signup');
-Route::post('/register', [BusinessController::class, 'register'])->name('business.register');
-Route::any('/login', [BusinessController::class, 'login'])->name('login');
-Route::post('/login', [BusinessController::class, 'Enterpriselogin'])->name('interprise.login');
-Route::any('/logout', [BusinessController::class, 'logout'])->name('interprise.logout');
+// Interprise bussiness user routes
+
+Route::group([], function(){
+    Route::get('/signup', [BusinessController::class, 'signup'])->name('bussiness.signup');
+    Route::post('/store', [BusinessController::class, 'enerpriseStore'])->name('bussiness.store');
+    Route::get('/login', [BusinessController::class, 'login'])->name('bussiness.login');
+    Route::post('/login', [BusinessController::class, 'Enterpriselogin'])->name('interprise.login');
+    Route::any('/logout', [BusinessController::class, 'logout'])->name('interprise.logout');
+});
+
+
 
 Route::post('/getstate', [BusinessController::class, 'getstate']);
 Route::post('/getcity', [BusinessController::class, 'getcity']);
@@ -184,9 +190,3 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
 
 });
-
-
-
-
-
-

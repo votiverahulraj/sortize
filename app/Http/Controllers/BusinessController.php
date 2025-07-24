@@ -26,22 +26,17 @@ class BusinessController extends Controller
 
     }
 
-     public function register(Request $request)
+     public function enerpriseStore(Request $request)
     {
-
-        $email = $request->email; 
-
-        //dd($email);
-
-    if (User::where('email', $email)->exists()) {
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Email already exists.'
+        //dd($request->all());
+        $request->validate([
+            "first_name" => "required",
+            "last_name" => "required",
+            "email" => "required|email|unique:users",
+            "contact_number" => "required|integer|digits:10",
+            "password" => "required|min:5|confirmed" 
         ]);
-    }
 
-        if ($request->isMethod('post')) {
       
             $user = User::find($request->user_id);
             if (!$user) {
@@ -65,20 +60,12 @@ class BusinessController extends Controller
             $user->is_verified   = 1;
             $user->created_at       = date('Y-m-d H:i:s');
             $user->save();
-
-              if ($request->ajax()) {
-        return response()->json([
-            'success' => true,
-            'message' => 'User profile updated successfully.',
-            'isEdit' => true,
-            'redirect' => route('login')
-        ]);
-   }
-
-             // return redirect()->route("login")->with("success", "Coach profile updated successfully.");
-        }
-
-
+            return response()->json([
+                "success" => true,
+                "redirect" => route('bussiness.login'),
+                "message"=> "signup successfully" 
+            ],201);
+   
         
     }
 
