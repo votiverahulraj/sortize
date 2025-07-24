@@ -17,8 +17,11 @@ use App\Http\Controllers\EventController;
 // });
 
 Route::get('/', function () {
-    return view('home');
+    return view('index');
 });
+Route::get('/home', function () {
+    return view('home');
+})->name('home');
 
 Route::any('/admin', [AdminController::class, 'login'])->name('admin.login');
 Route::any('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
@@ -57,6 +60,11 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     Route::post('/session_status', [EventController::class, 'session_status'])->name('session_status');
     Route::get('/booking-list',[BookingController::class,'bookingList'])->name('booking-list');
     Route::get('/view-booking/{id?}', [BookingController::class, 'viewBooking'])->name('view-booking');
+    // 24-07-2025
+    Route::get('/user_info/{id?}', [BookingController::class, 'userInfo'])->name('user_info');
+    Route::get('/slot/{id}/bookings', [BookingController::class, 'slotUserList'])->name('slot.users');
+
+
 
 });
 
