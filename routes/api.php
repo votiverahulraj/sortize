@@ -8,7 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
-
+// fghtfh
 
 Route::get('/status', function () {
     return response()->json(['status' => 'API is working']);
@@ -44,13 +44,13 @@ Route::post('/getSubCoachType/{coach_type_id}', [GuestController::class, 'getAll
 // Route::post('/getuserprofile', [AuthController::class, 'getuserprofile']);
 // Route::post('/getcoachprofile', [AuthController::class, 'getcoachprofile']);
 
-
 // VG route start
 //Route::get('/test', [TestController::class, 'test']);
 Route::get('/home_page', [UserController::class, 'event_list']);
 Route::post('/EventSlotbyDate', [ApiEventController::class, 'EventSlotbyDate']);
 Route::post('/BlockSlot', [ApiEventController::class, 'BlockSlot']);
-Route::post('/BookingSlot', [ApiEventController::class, 'BookingSlot']);
+Route::post('/BookingEvent', [ApiEventController::class, 'BookingEvent']);
+Route::post('/UserBookedEventList', [ApiEventController::class, 'UserBookedEventList']);
 
 // VG route end
 
