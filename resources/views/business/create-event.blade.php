@@ -214,12 +214,10 @@
                         <label for="type-event">Event Type</label>
                         <select class="form-select" id="type-event" name="event_type">
                         <option  {{ $event_type === null ? 'selected' : '' }}>Choose...</option>
-                        <option value="0" {{ $event_type == 0 ? 'selected' : '' }}>Sports</option>
-                        <option value="1" {{ $event_type == 1 ? 'selected' : '' }}>Music</option>
-                        <option value="2" {{ $event_type == 2 ? 'selected' : '' }}>Arts</option>
-                        <option value="3" {{ $event_type == 3 ? 'selected' : '' }}>Conferences</option>
-                        <option value="4" {{ $event_type == 4 ? 'selected' : '' }}>Fashion shows</option>
-                        <option value="5" {{ $event_type == 5 ? 'selected' : '' }}>Festivals</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" {{ $event_type == $category->id  ? 'selected' : '' }}>{{ $category->name }}</option>
+                        @endforeach
+                        
                     </select>
                         </div>
                      
