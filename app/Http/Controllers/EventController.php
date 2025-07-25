@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\Models\EventSlotModel;
 use App\Models\Session;
 use App\Models\Booking;
+use App\Models\EventCategory;
 
 class EventController extends Controller
 {
@@ -27,8 +28,9 @@ class EventController extends Controller
     public function createEvent(Request $request)
     {
         $userCount = DB::table('users')->where('user_type', '=', 3)->where('is_deleted', '=', 0)->count();
+        $categories = EventCategory::all();
         $eventgallery = collect();
-        return view('business.create-event', compact('userCount', 'eventgallery'));
+        return view('business.create-event', compact('userCount', 'eventgallery','categories'));
     }
 
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EventCategory;
 
 class Event extends Model
 {
@@ -32,6 +33,10 @@ class Event extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'event_id');
+    }
+
+    public function category(){
+        return $this->belongsTo(EventCategory::class,'event_type');
     }
 
 
