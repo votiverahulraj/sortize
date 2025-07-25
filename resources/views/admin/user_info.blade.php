@@ -1,7 +1,6 @@
-@extends('business.layouts.layout')
+@extends('admin.layouts.layout')
 
 @section('content')
-
 
 <div class="main-panel">
           <div class="content-wrapper">
@@ -41,7 +40,7 @@
 
                 <div class="card">
                   <div class="card-body">
-                      <a href="{{route('interprise.booking-list')}}" class="btn btn-outline-info btn-fw btn-sm" style="float: right;"><i class="fa fa-mail-reply"></i> Back</a>
+                      <a href="{{route('admin.booking-list')}}" class="btn btn-outline-info btn-fw btn-sm" style="float: right;"><i class="fa fa-mail-reply"></i> Back</a>
                       <h4 class="card-title">Booking</h4>
 
                     <!-- Nav tabs -->

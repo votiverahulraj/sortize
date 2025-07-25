@@ -1,9 +1,7 @@
 @extends('admin.layouts.layout')
 
 <style>
-     .form-control-sm {
-        padding: 0.45rem .5rem !important;
-    }
+
     .badge-cust {
         padding: 5px 10px;
         font-size: 14px;
@@ -12,6 +10,27 @@
     }
     .card .card-body {
         padding: 0.25rem 0.25rem !important;
+    }
+
+     .form-control-sm {
+        padding: 0.45rem .5rem !important;
+    }
+
+
+    .badge-success{
+        color:#57B657 !important;
+    }
+    .badge-danger{
+        color: #FF4747!important;
+    }
+    .badge-warning{
+        color: #FFC100!important;
+    }
+    .badge-info{
+        color: #248AFD!important;
+    }
+    .dt-column-title {
+        text-align: center;
     }
 </style>
 
@@ -28,7 +47,7 @@
             <div class="row">
                 <div class="col-md-12 grid-margin">
                     @include('admin.partials.breadcrumbs', [
-                        'title' => 'Booking List',
+                        'title' =>  $event_name,
                         'breadcrumbs' => [
                             ['label' => 'Booking List', 'url' => route('admin.event-list')],
                             ['label' => $event_name],
@@ -52,8 +71,8 @@
 
                                         <th scope="col">S No</th>
                                         <th scope="col">User Name</th>
-                                        <th scope="col">Event Name</th>
-                                        <th scope="col">Event Slot</th>
+                                        <th scope="col">Date</th>
+                                         <th scope="col">Time</th>
                                         <th scope="col">Ticket Qty</th>
                                         <th scope="col">Price</th>
                                         <th scope="col">Payment Status</th>
@@ -83,11 +102,15 @@
                                                 <td>{{ $booking->user->first_name ?? '' }}
                                                     {{ $booking->user->last_name ?? '' }}
                                                 </td>
-                                                <td>{{ $booking->event->event_name ?? '' }}</td>
-                                                <td>
-                                                    {{ $booking->slot->date ?? '' }}<br>
-                                                    {{ $booking->slot->start_time ?? '' }} -
-                                                    {{ $booking->slot->end_time ?? '' }}
+                                                {{-- <td>{{ $booking->event->event_name ?? '' }}</td> --}}
+                                                  <td>
+                                                    <label class="badge rounded-pill bg-success">{{ $booking->slot->date ?? '' }}</label>
+                                                </td>
+                                               <td>
+                                                    <label class="badge badge-info">
+                                                        {{ \Carbon\Carbon::parse($booking->slot?->start_time)->format('H:i') ?? '' }} -
+                                                        {{ \Carbon\Carbon::parse($booking->slot?->end_time)->format('H:i') ?? '' }}
+                                                    </label>
                                                 </td>
 
                                                 <td>{{ $booking->ticket_quantity }}</td>
@@ -109,8 +132,8 @@
                                                 <td>{{ \Carbon\Carbon::parse($booking->booked_at)->format('d M Y, h:i A') }}
                                                 </td>
 
-                                                <td>
-                                                    <a href="#"><i class="mdi mdi mdi-eye"></i></a>
+                                                 <td>
+                                                    <a href="{{ route('admin.user_info',[$booking->user->id]) }}"><i class="mdi mdi mdi-eye"></i></a>
                                                 </td>
                                             </tr>
 

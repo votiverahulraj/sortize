@@ -61,7 +61,9 @@
                                         <!-- <th scope="col">Event Image</th> -->
                                         <th scope="col">Event Name</th>
                                         <th scope="col">Event Type</th>
-                                        <th scope="col">Event Date & Time</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Time</th>
+
                                         <th scope="col">Event Location</th>
                                         <th scope="col">Event Price</th>
                                         <th scope="col">Events Limit</th>
@@ -91,9 +93,23 @@
                                                     ];
                                                 @endphp
                                                 <td>{{ $eventTypes[$event->event_type] ?? 'N/A' }}</td>
-                                                <td>
-                                                    {{ \Carbon\Carbon::parse($event->date_time)->format('F d, Y - h:i A') }}
-                                                </td>
+                                                     @php
+                                                        $start = \Carbon\Carbon::parse($event->start_date);
+                                                        $end = \Carbon\Carbon::parse($event->end_date);
+                                                    @endphp
+
+                                                    <td>
+                                                        <label class="badge rounded-pill bg-success">
+                                                            {{ $start->format('d') }} - {{ $end->format('d F Y') }}
+                                                        </label>
+                                                    </td>
+
+
+                                                  <td>
+                                                     <label class="badge rounded-pill bg-primary">
+                                                          {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') ?? '' }} -
+                                                        {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') ?? '' }}
+                                                      </label></td>
                                                 <td>{{ $event->address }}</td>
                                                 <td>₹{{ $event->price }}</td>
                                                 <td>

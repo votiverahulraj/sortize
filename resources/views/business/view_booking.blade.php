@@ -124,9 +124,8 @@
                                                 <td>{{ ucfirst($booking->booking_status) }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($booking->booked_at)->format('d M Y, h:i A') }}
                                                 </td>
-
                                                 <td>
-                                                    <a href="{{ route('interprise.user_info',['id',$booking->user->id]) }}"><i class="mdi mdi mdi-eye"></i></a>
+                                                    <a href="{{ route('interprise.user_info',[$booking->user->id]) }}"><i class="mdi mdi mdi-eye"></i></a>
                                                 </td>
                                             </tr>
 

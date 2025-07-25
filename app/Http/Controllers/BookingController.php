@@ -29,7 +29,7 @@ class BookingController extends Controller
             })
             ->get();
 
-        // dd($bookings);
+        //  dd($bookings);
         return view('business.booking_list', compact('bookings'));
     }
 
@@ -64,19 +64,19 @@ class BookingController extends Controller
 
     public function userInfo($id=null)
     {
-        $bookingId=$id;
+        $user_id=$id;
 
         $bookingInfo = Booking::with([
-                'user:id,first_name,last_name,email,contact_number,gender,country_id',
+                'user:id,first_name,last_name,email,contact_number,gender,country_id,state_id,city_id',
                 'user.country:country_id,country_name',
                 'user.state:state_id,state_name',
                 'user.city:city_id,city_name',
                 'event:id,event_name,address,start_date,end_date,event_days,description',
                 'slot:id,date,start_time,end_time'
             ])
-            ->where('id',  $bookingId)
+            ->where('user_id',  $user_id)
             ->first();
-        //   dd($bookingInfo);
+            // dd($bookingInfo);
 
 
         if (!$bookingInfo) {
@@ -95,6 +95,7 @@ class BookingController extends Controller
         $bookings = Booking::with(['user:id,first_name,last_name', 'event:id,event_name', 'slot:id,date,start_time,end_time'])
         ->where('event_slot_id', $slotId)
         ->get();
+
 
          if (! $bookings) {
             return redirect()->back()->with('error', 'Booking not found.');
