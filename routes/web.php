@@ -7,14 +7,29 @@ use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServicePackageController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\EventController;
+use Illuminate\Support\Facades\Artisan;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+// run migration
+
+Route::get('/run-migration', function () {
+    Artisan::call('migrate', [
+        '--force' => true, // force to run in production
+    ]);
+    return 'Migration completed ✅';
+});
+
+Route::get('/run-seeder', function () {
+    Artisan::call('db:seed', [
+        '--force' => true, // force to run in production
+    ]);
+    return 'Sedder completed ✅';
+});
 
 Route::get('/', function () {
     return view('index');
@@ -70,9 +85,6 @@ Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(funct
     // 24-07-2025
     Route::get('/user_info/{id?}', [BookingController::class, 'userInfo'])->name('user_info');
     Route::get('/slot/{id}/bookings', [BookingController::class, 'slotUserList'])->name('slot.users');
-
-
-
 });
 
 // Route::any('/dashboard', [BusinessController::class, 'dashboard'])->name('interprise.dashboard');
