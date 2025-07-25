@@ -7,12 +7,6 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="collapse" href="#masters" aria-expanded="false" aria-controls="masters">
-        <i class="icon-columns menu-icon"></i>
-        <span class="menu-title">Profile</span>
-      </a>
-    </li>
-    <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#event-manage" aria-expanded="false" aria-controls="event-manage">
         <i class="icon-head menu-icon"></i>
         <span class="menu-title">Event Management</span>

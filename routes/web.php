@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\InterpriseController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -62,6 +63,7 @@ Route::post('/getsubType', [BusinessController::class, 'getsubType']);
 
 Route::middleware(['auth'])->prefix('dashboard')->as('interprise.')->group(function () {
     Route::any('/', [BusinessController::class, 'dashboard'])->name('dashboard');
+    Route::any('/profile', [InterpriseController::class, 'profile'])->name('profile');
     Route::any('/create-event', [EventController::class, 'createEvent'])->name('create-event');
     Route::post('/add-event/{id?}', [EventController::class, 'addEvent'])->name('add-event');
     Route::get('/edit-event/{id?}', [EventController::class, 'editEvent'])->name('edit-event');
