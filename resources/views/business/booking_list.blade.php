@@ -118,7 +118,7 @@
                                         <td>
                                             {{-- <a href="javascript:void(0)" class="del_booking" booking_id=""><i class="mdi mdi-delete"></i></a> | --}}
                                             {{-- <a href="#"><i class="mdi mdi-lead-pencil"></i></a> | --}}
-                                            <a href="{{ route('interprise.user_info')}}/{{ $booking->id }}"><i class="mdi mdi mdi-eye"></i></a>
+                                            <a href="{{ route('interprise.user_info')}}/{{ $booking->user_id }}"><i class="mdi mdi mdi-eye"></i></a>
                                         </td>
                                     </tr>
 

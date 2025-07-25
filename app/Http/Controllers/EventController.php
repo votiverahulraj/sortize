@@ -158,6 +158,7 @@ class EventController extends Controller
         $user_id =  $user->id;
         $eventlist = Event::upcoming()->where('user_id', '=', $user_id)->orderBy('id', 'desc')->paginate(20);
 
+        // dd($eventlist);
         return view('business.event-list', compact('eventlist'));
     }
 

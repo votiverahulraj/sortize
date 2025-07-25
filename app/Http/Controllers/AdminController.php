@@ -456,12 +456,14 @@ class AdminController extends Controller
                 $query->where('is_active', 1);
             })
             ->get();
-        // foreach ($bookings as $booking) {
-        //     echo "<pre>";
-        //     print_r($booking->toArray());
-        //     echo "</pre>";
-        // }
-        return view('admin.bookings_list', compact('bookings'));
+
+       $events = DB::table('events')
+            ->select('id', 'event_name')
+            ->get();
+
+
+
+        return view('admin.bookings_list', compact('bookings','events'));
     }
 
 
@@ -496,5 +498,31 @@ class AdminController extends Controller
 
         // return view('admin.slot-users');
         return view('admin.slot-users', compact('bookings'));
+    }
+
+  public function userInfo($id=null)
+    {
+        $user_id=$id;
+
+        $bookingInfo = Booking::with([
+                'user:id,first_name,last_name,email,contact_number,gender,country_id,state_id,city_id',
+                'user.country:country_id,country_name',
+                'user.state:state_id,state_name',
+                'user.city:city_id,city_name',
+                'event:id,event_name,address,start_date,end_date,event_days,description',
+                'slot:id,date,start_time,end_time'
+            ])
+            ->where('user_id',  $user_id)
+            ->first();
+            // dd($bookingInfo);
+
+
+        if (!$bookingInfo) {
+            return redirect()->back()->with('error', 'Booking not found.');
+        }
+
+
+         return view('admin.user_info',compact('bookingInfo'));
+
     }
 }

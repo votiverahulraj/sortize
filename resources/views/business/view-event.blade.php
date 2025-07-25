@@ -9,7 +9,7 @@
                <?php
                   $event_name=$event_type=$address=$ticket_price=$ticket_quantity=$event_days=$start_time=$end_time=$duration=$gap=$event_limit=$description=$date_time=$media=$price=$start_date=$end_date="";
                   $event_id="";
-                
+
                   if(!empty($eventdetails))
                   {
                     $event_id=$eventdetails->id;
@@ -30,7 +30,7 @@
                     $start_date=$eventdetails->start_date;
                     $end_date=$eventdetails->end_date;
                     $media=$eventdetails->media;
-                   
+
                   }
                 ?>
                 <div class="card">
@@ -44,10 +44,8 @@
                       <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Events</button>
                       </li>
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button" role="tab" aria-controls="messages" aria-selected="false">Booking</button>
-                      </li>
-                     
+
+
                     </ul>
 
                     <div class="tab-content">
@@ -87,7 +85,7 @@
                             </div>
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Ticket Price : </strong> $ {{$price}}</label>
-                            </div> 
+                            </div>
                         <!-- @php
                             $days = is_string($event_days) ? json_decode($event_days, true) : $event_days;
                             $days = is_array($days) ? $days : [];
@@ -99,7 +97,7 @@
                         </div> -->
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>No. of Tickets : </strong> {{$ticket_quantity}}</label>
-                              
+
                             </div>
                            <!--  <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Price per Ticket (₹) : </strong> $ {{$ticket_price}}</label>
@@ -112,18 +110,18 @@
                             </div>
                             <!-- <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Event Duration : </strong> {{$duration}} Minute</label>
-                              
+
                             </div>
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Gap Between Events (in minutes, optional) : </strong> {{$gap}}</label>
-                              
+
                             </div> -->
                            <!--  <div class="form-group col-md-6">
                               <label for="exampleInputEmail1">
                               <strong>Limit Events per Day:</strong>
                               {{ $event_limit == 0 ? 'Only one event per day' : 'Multiple events per day' }}
                           </label>
-                              
+
                             </div> -->
 
                             <!-- <div class="form-group col-md-6">
@@ -131,25 +129,25 @@
                               @if(!empty($media))
                               <img src="{{ asset('public/' . $media)}}" style="max-width: 100px;max-height: 100px;">
                               @endif
-                              
+
                             </div> -->
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Photos : </strong></label>
                             @if (!$eventgallery->isEmpty())
     <div class="mt-2">
-    
+
         @foreach ($eventgallery as $gallery)
             <img src="{{ asset('public/' . $gallery->event_media) }}" alt="Media" class="img-thumbnail m-2" style="max-width: 150px;">
         @endforeach
     </div>
 @endif
-                              
+
  </div>
 
 <!-- @if(isset($eventslot) && count($eventslot))
     <div class="row mb-3">
         <div class="col-md-6">
-              <label for="exampleInputEmail1"><strong>Generated Slots: </strong></label> 
+              <label for="exampleInputEmail1"><strong>Generated Slots: </strong></label>
             <ul class="list-group">
                 @foreach($eventslot as $slot)
                     <li class="list-group-item">
@@ -206,7 +204,7 @@
                         </div>
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>No. of Tickets : </strong> {{$ticket_quantity}}</label>
-                              
+
                             </div>
                            <!--  <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Price per Ticket (₹) : </strong> $ {{$ticket_price}}</label>
@@ -219,18 +217,18 @@
                             </div>
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Event Duration : </strong> {{$duration}} Minute</label>
-                              
+
                             </div>
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Gap Between Events (in minutes, optional) : </strong> {{$gap}}</label>
-                              
+
                             </div>
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1">
                               <strong>Limit Events per Day:</strong>
                               {{ $event_limit == 0 ? 'Only one event per day' : 'Multiple events per day' }}
                           </label>
-                              
+
                             </div>
 
                             <!-- <div class="form-group col-md-6">
@@ -238,25 +236,25 @@
                               @if(!empty($media))
                               <img src="{{ asset('public/' . $media)}}" style="max-width: 100px;max-height: 100px;">
                               @endif
-                              
+
                             </div> -->
                             <div class="form-group col-md-6">
                               <label for="exampleInputEmail1"><strong>Photos : </strong></label>
                             @if (!$eventgallery->isEmpty())
     <div class="mt-2">
-    
+
         @foreach ($eventgallery as $gallery)
             <img src="{{ asset('public/' . $gallery->event_media) }}" alt="Media" class="img-thumbnail m-2" style="max-width: 150px;">
         @endforeach
     </div>
 @endif
-                              
+
  </div>
 
 @if(isset($eventslot) && count($eventslot))
     <div class="row mb-3">
         <div class="col-md-6">
-              <label for="exampleInputEmail1"><strong>Generated Slots: </strong></label> 
+              <label for="exampleInputEmail1"><strong>Generated Slots: </strong></label>
             <ul class="list-group">
                 @foreach($eventslot as $slot)
                     <li class="list-group-item">
@@ -270,11 +268,11 @@
                           </div>
                       </div>
                       @endif
-                      
-                      
+
+
                       <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                       </div>
-                      
+
                       <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab">
                         <div class="table-responsive">
                           <table class="table table-striped" id="example">
@@ -303,11 +301,11 @@
                               <td>  </td>
                                <td>
                               </td>
-                                <td>  
-                            
+                                <td>
+
                               </td>
                             </tr>
-                          
+
                             </tbody>
                           </table>
                         </div>
@@ -327,7 +325,7 @@
                               </tr>
                             </thead>
                             <tbody>
-                             
+
                             </tbody>
                           </table>
                         </div>
@@ -411,7 +409,7 @@
                       '_token':'{{csrf_token()}}'
                     },
                     success: function(result) {
-                      
+
                       swalWithBootstrapButtons.fire({
                         title: "Deleted!",
                         text: "User has been deleted.",
