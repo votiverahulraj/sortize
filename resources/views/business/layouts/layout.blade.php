@@ -17,7 +17,8 @@
     <link rel="stylesheet" href="{{ url('/public') }}/admin_assets/vendors/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ url('/public') }}/admin_assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="{{ url('/public') }}/admin_assets/vendors/select2/select2.min.css">
-    <link rel="stylesheet" href="{{ url('/public') }}/admin_assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
+    <link rel="stylesheet"
+        href="{{ url('/public') }}/admin_assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
     <link rel="stylesheet" href="{{ url('/public') }}/admin_assets/css/style.css">
     <link rel="stylesheet" href="{{ url('/public') }}/admin_assets/css/dashboard-all.css">
 
@@ -41,7 +42,7 @@
 
 <body>
 
-      <div class="container-scroller">
+    <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
@@ -103,7 +104,11 @@
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
                             id="profileDropdown">
-                            <img src="{{ url('/public') }}/admin_assets/images/faces/face28.jpg" alt="profile" />
+                            @php
+                                $profileImg = auth()->user()->profile_image;
+                                $avataar = $profileImg ? $profileImg : 'default_profile.png';
+                            @endphp
+                            <img src="{{ asset('/public/uploads/profile_image/' . $avataar) }}" alt="profile" />
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
                             aria-labelledby="profileDropdown">
@@ -174,11 +179,11 @@
 
     <!-- Sidebar Toggle -->
     <script>
-        $('.add-open-close').on('click', function () {
+        $('.add-open-close').on('click', function() {
             $('#sidebar').toggleClass('active');
         });
 
-        $(document).on('click', function (e) {
+        $(document).on('click', function(e) {
             const sidebar = $('#sidebar');
             const toggleButton = $('.add-open-close');
 
@@ -191,7 +196,7 @@
 
     <!-- DataTable Initialization -->
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#eventtable').DataTable({
                 dom: 'Bfrtip',
                 buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
