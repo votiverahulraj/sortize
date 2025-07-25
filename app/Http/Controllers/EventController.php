@@ -30,7 +30,7 @@ class EventController extends Controller
         $userCount = DB::table('users')->where('user_type', '=', 3)->where('is_deleted', '=', 0)->count();
         $categories = EventCategory::all();
         $eventgallery = collect();
-        return view('business.create-event', compact('userCount', 'eventgallery','categories'));
+        return view('business.create-event', compact('userCount', 'eventgallery', 'categories'));
     }
 
 
@@ -178,12 +178,12 @@ class EventController extends Controller
         $id = $request->id;
 
         $eventdetails = DB::table('events')->where('id', '=', $id)->where('is_deleted', '=', 0)->first();
-
+        $categories = EventCategory::all();
         $eventgallery = DB::table('event_gallery_images')->where('event_id', '=', $id)->get();
 
         // dd($eventgallery);
 
-        return view('business.create-event', compact('eventdetails', 'eventgallery'));
+        return view('business.create-event', compact('eventdetails', 'eventgallery', 'categories'));
     }
 
     public function bookingList()
@@ -234,7 +234,7 @@ class EventController extends Controller
     {
         $eventId = $id;
         $sessionlist = DB::table('session')->where('event_id', $eventId)->orderBy('id', 'asc')->paginate(20);
-    //  dd($sessionlist);
+        //  dd($sessionlist);
 
         return view('business.session-list', compact('sessionlist'));
     }
