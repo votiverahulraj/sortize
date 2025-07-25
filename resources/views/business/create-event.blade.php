@@ -160,7 +160,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                         <label for="exampleInputUsername1">Select Address</label>
-                        <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Add address here" name="address" value="{{$address}}">
+                        <input type="text" class="form-control" id="address_1" placeholder="Add address here" name="address" value="{{$address}}">
                         @error('address')
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -504,7 +504,8 @@
             </form>
    
 </div>
-
+@endsection
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('eventTypeDropdown');
@@ -531,9 +532,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places" async defer></script>
+
+<script>
+    function initAutocomplete() {
+        const input = document.getElementById('address_1');
+        const autocomplete = new google.maps.places.Autocomplete(input);
+
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            if (place.geometry) {
+                document.getElementById('latitude').value = place.geometry.location.lat();
+                document.getElementById('longitude').value = place.geometry.location.lng();
+            }
+        });
+    }
+
+    window.initAutocomplete = initAutocomplete;
 </script>
 
-
-           
-        @endsection
-      
+<script>
+    window.addEventListener('load', () => {
+        if (typeof google !== 'undefined') {
+            initAutocomplete();
+        }
+    });
+</script>
+@endpush
