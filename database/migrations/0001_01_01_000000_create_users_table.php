@@ -34,7 +34,7 @@ return new class extends Migration
                 $table->unsignedInteger('country_id')->nullable();
                 $table->unsignedInteger('state_id')->nullable();
                 $table->string('city_id', 255)->nullable();
-                $table->tinyInteger('user_type')->default(2)->comment('1-admin /2-user /3-coach');
+                $table->tinyInteger('user_type')->default(2)->comment('1-admin /2-client /3-bussiness');
                 $table->tinyInteger('is_paid')->default(0)->comment('0-no/1-yes');
                 $table->string('user_timezone', 64)->nullable();
                 $table->tinyInteger('user_status')->default(0)->comment('0-pending/1-approved/2-suspended');
