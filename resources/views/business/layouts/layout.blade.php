@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- ✅ Meta -->
     <meta charset="utf-8">
@@ -53,7 +54,7 @@
 
 <body>
 
-     <div class="container-scroller">
+    <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
@@ -123,7 +124,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
                             aria-labelledby="profileDropdown">
-                            <a class="dropdown-item">
+                            <a class="dropdown-item" href="{{ route('interprise.profile') }}">
                                 <i class="ti-settings text-primary"></i> Settings </a>
                             <a class="dropdown-item" href="{{ route('interprise.logout') }}">
                                 <i class="ti-power-off text-primary"></i> Logout </a>
@@ -153,7 +154,7 @@
 
     <!-- ✅ Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-     {{-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script> --}}
+    {{-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script> --}}
     <script src="{{ url('/public') }}/admin_assets/vendors/js/vendor.bundle.base.js"></script>
     <script src="{{ url('/public') }}/admin_assets/vendors/select2/select2.min.js"></script>
     <script src="{{ url('/public') }}/admin_assets/js/select2.js"></script>
@@ -208,4 +209,5 @@
 
     @stack('scripts')
 </body>
+
 </html>
