@@ -413,4 +413,5 @@ class EventController extends Controller
         $user->is_active = $request->is_active;
         $user->save();
     }
+
 }
