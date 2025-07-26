@@ -575,7 +575,7 @@ public function friend_requests(Request $request)
     ]);
 }
 
-public function blickedUsers(Request $request)
+public function blockedUsers(Request $request)
 {
     $response = [
         'status' => 0,

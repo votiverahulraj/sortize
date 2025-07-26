@@ -78,6 +78,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('pending-friend-requests',[UserController::class,'pendingFriendRequest']);
 
     // Blocked users
-     Route::get('/blocked-users', [UserController::class, 'blickedUsers']);
+     Route::get('/blocked-users', [UserController::class, 'blockedUsers']);
 
 });
