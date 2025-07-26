@@ -74,7 +74,7 @@ Route::middleware('auth:api')->group(function () {
     // Friend request api
     Route::post('/friend_requests', [UserController::class, 'friend_requests']);
     Route::get('/suggested_user', [UserController::class, 'suggested_user']);
-    Route::post('/friend-list', [UserController::class, 'friendList']);
+    Route::get('/friend-list', [UserController::class, 'friendList']);
 
     // Blocked users
      Route::get('/blocked-users', [UserController::class, 'blickedUsers']);
