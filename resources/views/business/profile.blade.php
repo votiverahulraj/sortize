@@ -35,26 +35,26 @@
                         <div class="card-body">
                             <a href="{{ route('admin.interpriseList') }}" class="btn btn-outline-info btn-fw"
                                 style="float: right;">Back</a>
-                            <h4 class="card-title">Interprise Management</h4>
+                            <h4 class="card-title">Profile Management</h4>
 
                             <div class="tab-content">
                                 <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                    <form class="forms-sample" action="{{ route('admin.addInerprise') }}" method="POST"
-                                        id="interprise" enctype="multipart/form-data">
+                                    <form class="forms-sample" action="{{ route('interprise.updateProfile') }}"
+                                        method="POST" id="interprise" enctype="multipart/form-data">
                                         {!! csrf_field() !!}
                                         <div class="row">
-                                            @php
-                                                $selectedCompanyType = old(
-                                                    'company_type',
-                                                    $userDetail->company_type ?? ($company_type ?? ''),
-                                                );
-                                            @endphp
+
 
                                             <div class="row">
                                                 <div class="form-group col-md-2">
-
+                                                    @php
+                                                        $avataar = 'default_profile.png';
+                                                        if ($userDetail->profile_image) {
+                                                            $avataar = $userDetail->profile_image;
+                                                        }
+                                                    @endphp
                                                     <img id="profilePreview"
-                                                        src="http://localhost/sortize/public/admin_assets/images/faces/face28.jpg"
+                                                        src="{{ asset('public/uploads/profile_image/' . $avataar) }}"
                                                         alt="Profile Picture" width="100" class="mb-2">
 
 
@@ -94,8 +94,8 @@
                                             <!-- Email -->
                                             <div class="form-group col-md-6">
                                                 <label style="width: 250px;" class="mb-0 mr-2">Email Address</label>
-                                                <input type="email" class="form-control form-control-sm" name="email"
-                                                    autocomplete="off" id="email"
+                                                <input type="email" readonly class="form-control form-control-sm"
+                                                    name="email" autocomplete="off" id="email"
                                                     value="{{ $email == '' ? old('email') : $email }}">
                                                 @error('email')
                                                     <small class="text-danger">{{ $message }}</small>
@@ -113,25 +113,6 @@
                                                 @enderror
                                             </div>
 
-                                            <!-- Password -->
-                                            @if ($user_id == '')
-                                                <div class="form-group col-md-6">
-                                                    <label style="width: 250px;" class="mb-0 mr-2">Password</label>
-                                                    <input type="password" class="form-control form-control-sm"
-                                                        name="password" id="password">
-                                                    @error('password')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
-                                                </div>
-
-                                                <!--  Confirm Password -->
-                                                <div class="form-group col-md-6">
-                                                    <label style="width: 250px;" class="mb-0 mr-2">Confirm Password</label>
-                                                    <input type="password" class="form-control form-control-sm"
-                                                        name="password_confirmation" id="password_confirmation">
-                                                </div>
-                                            @endif
-
                                             <!-- Website Link -->
                                             <div class="form-group col-md-6">
                                                 <label style="width: 250px;" class="mb-0 mr-2">Website Link
@@ -144,20 +125,13 @@
                                             <div class="form-group col-md-6">
                                                 <label style="width: 250px;" class="mb-0 mr-2">City (Activity
                                                     Location)</label>
-                                                <input type="text" class="form-control form-control-sm" name="city_id"
-                                                    id="city_id" value="{{ $city_id }}">
+                                                <input type="text" class="form-control form-control-sm" name="location"
+                                                    value="">
                                             </div>
                                         </div>
-                                        <input type="hidden" name="user_time" value="" id="user_timezone">
                                         <button type="submit" class="btn btn-primary me-2">Save</button>
                                     </form>
                                 </div>
-
-
-                                <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab">
-                                    Thired</div>
-                                <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-                                    Fourth</div>
                             </div>
                         </div>
                     </div>
