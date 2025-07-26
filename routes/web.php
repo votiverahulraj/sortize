@@ -212,5 +212,6 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     // 23-07-2025
     Route::get('admin/slot/{id}/bookings', [AdminController::class, 'slotUserList'])->name('admin.slot.users');
     //25-07-2025
-    Route::get('/admin/user_info/{id?}', [AdminController::class, 'userInfo'])->name('admin.user_info');
+    Route::any('/admin/user_info/{id?}', [AdminController::class, 'userInfo'])->name('admin.user_info');
+
 });

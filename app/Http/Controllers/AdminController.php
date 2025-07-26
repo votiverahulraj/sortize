@@ -500,9 +500,9 @@ class AdminController extends Controller
         return view('admin.slot-users', compact('bookings'));
     }
 
-  public function userInfo($id=null)
+  public function userInfo(Request $request, $id=null)
     {
-        $user_id=$id;
+        $user_id = $id ?? $request->booker_id;
 
         $bookingInfo = Booking::with([
                 'user:id,first_name,last_name,email,contact_number,gender,country_id,state_id,city_id',
@@ -516,13 +516,29 @@ class AdminController extends Controller
             ->first();
             // dd($bookingInfo);
 
+            if ($request->ajax()) {
+                    if (!$bookingInfo) {
+                        return response()->json(['error' => 'Booking not found.'], 404);
+                    }
 
-        if (!$bookingInfo) {
-            return redirect()->back()->with('error', 'Booking not found.');
-        }
+                    return response()->json([
+                        'name' => $bookingInfo->user->first_name . ' ' . $bookingInfo->user->last_name,
+                        'email' => $bookingInfo->user->email,
+                        'phone' => $bookingInfo->user->contact_number,
+                        'gender' => $bookingInfo->user->gender,
+                        'country' => $bookingInfo->user->country->country_name ?? '',
+                        'state' => $bookingInfo->user->state->state_name ?? '',
+                        'city' => $bookingInfo->user->city->city_name ?? '',
+                        'event_name' => $bookingInfo->event->event_name ?? '',
+                        'slot_date' => $bookingInfo->slot->date ?? '',
+                    ]);
+            }
 
+            if (!$bookingInfo) {
+                return redirect()->back()->with('error', 'Booking not found.');
+            }
 
-         return view('admin.user_info',compact('bookingInfo'));
+           return view('admin.user_info',compact('bookingInfo'));
 
     }
 }
