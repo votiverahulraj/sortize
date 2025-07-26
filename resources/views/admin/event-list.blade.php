@@ -4,35 +4,43 @@
     .form-control-sm {
         padding: 0.45rem .5rem !important;
     }
+
     .card .card-body {
         padding: 0.25rem 0.25rem !important;
     }
 
-   @media (max-width: 480px) {
-    .buttons-print,
-    .buttons-copy,
-    .buttons-csv {
-        display: none !important;
+    .dt-column-title {
+        text-align: center;
     }
-    .dt-layout-start{
-        margin: 10px;
-    }
-    .buttons-pdf{
-        background: linear-gradient(135deg,#f79ae6, #00d0ffa1 ) !important;
-        border: none !important;
-        border-radius: 5px !important;
-        margin-right: 8px !important;
-    }
-    .buttons-excel{
-          background: linear-gradient(135deg,#f79ae6, #00d0ffa1 ) !important;
-          border: none !important;
-          border-radius: 5px !important;
-          margin-left: 8px !important;
-    }
+
+    @media (max-width: 480px) {
+
+        .buttons-print,
+        .buttons-copy,
+        .buttons-csv {
+            display: none !important;
+        }
+
+        .dt-layout-start {
+            margin: 10px;
+        }
+
+        .buttons-pdf {
+            background: linear-gradient(135deg, #f79ae6, #00d0ffa1) !important;
+            border: none !important;
+            border-radius: 5px !important;
+            margin-right: 8px !important;
+        }
+
+        .buttons-excel {
+            background: linear-gradient(135deg, #f79ae6, #00d0ffa1) !important;
+            border: none !important;
+            border-radius: 5px !important;
+            margin-left: 8px !important;
+        }
 
 
     }
-
 </style>
 
 @section('content')
@@ -61,13 +69,20 @@
                                         <th scope="col">Event Location</th>
                                         <th scope="col">Event Price</th>
                                         <th scope="col">Events Limit</th>
-                                        <th scope="col">Status</th>
+                                        <th scope="col"> &nbsp; Status &nbsp; </th>
                                         <th scope="col">Action</th>
-                                        <th scope="col">Manage Session</th>
-                                        <th scope="col">View Bookings</th>
+                                        <th scope="col">Slot</th>
+                                        <th scope="col">Booking</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $eventStatuses = [
+                                            0 => 'Pending',
+                                            1 => 'Published',
+                                            2 => 'UnPublished',
+                                        ];
+                                    @endphp
                                     @if ($eventlist)
                                         @php $i=1; @endphp
                                         @foreach ($eventlist as $event)
@@ -93,20 +108,31 @@
                                                     @else
                                                         Recurrent Event
                                                     @endif
+
                                                 </td>
                                                 <td>
-                                                    <select class="event_status form-select form-select-sm"
-                                                        user="{{ $event->id }}">
-                                                        <option value="0" {{ $event->status == 0 ? 'selected' : '' }}>
-                                                            Pending
-                                                        </option>
-                                                        <option value="1" {{ $event->status == 1 ? 'selected' : '' }}>
-                                                            Published
-                                                        </option>
-                                                        <option value="2" {{ $event->status == 2 ? 'selected' : '' }}>
-                                                            UnPublished
-                                                        </option>
-                                                    </select>
+                                                    <div class="dropdown">
+                                                        <button
+                                                            class="btn btn-sm dropdown-toggle
+                                                            {{ $event->status == 0 ? 'btn-warning' : ($event->status == 1 ? 'btn-success' : 'btn-secondary') }}"
+                                                            type="button" id="dropdownMenuStatus{{ $event->id }}"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            {{ $eventStatuses[$event->status] }}
+                                                        </button>
+
+                                                        <ul class="dropdown-menu"
+                                                            aria-labelledby="dropdownMenuStatus{{ $event->id }}">
+                                                            @foreach ($eventStatuses as $key => $label)
+                                                                <li>
+                                                                    <a class="dropdown-item {{ $event->status == $key ? 'active' : '' }}"
+                                                                        href="#" data-event-id="{{ $event->id }}"
+                                                                        data-status="{{ $key }}">
+                                                                        {{ $label }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <a href="{{ route('admin.edit-event') }}/{{ $event->id }}"><i
@@ -123,7 +149,8 @@
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <a href="{{ route('admin.viewBookings') }}/{{ $event->id }}">View</a>
+                                                    <a
+                                                        href="{{ route('admin.viewBookings') }}/{{ $event->id }}">View</a>
                                                 </td>
                                             </tr>
                                             @php $i++; @endphp
