@@ -20,11 +20,11 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/forget_pwd', [UserController::class, 'forget_pwd']);
 Route::post('/verify_OTP', [UserController::class, 'verify_OTP']);
 Route::post('/resetPassword', [UserController::class, 'resetPassword']);
-Route::post('/suggested_user', [UserController::class, 'suggested_user']);
+
 Route::get('/professional_title', [UserController::class, 'professional_title']);
-Route::post('/friend_requests', [UserController::class, 'friend_requests']);
+
 Route::post('/pending_request_list', [UserController::class, 'pending_request_list']);
-Route::post('/accept_request_list', [UserController::class, 'accept_request_list']);
+
 
 
 Route::post('/coachlist', [AuthController::class, 'index']);
@@ -51,6 +51,8 @@ Route::post('/EventSlotbyDate', [ApiEventController::class, 'EventSlotbyDate']);
 Route::post('/BlockSlot', [ApiEventController::class, 'BlockSlot']);
 Route::post('/BookingEvent', [ApiEventController::class, 'BookingEvent']);
 Route::post('/UserBookedEventList', [ApiEventController::class, 'UserBookedEventList']);
+Route::post('/EventListFilters', [ApiEventController::class, 'EventListFilters']);
+Route::post('/CancelBooking', [ApiEventController::class, 'CancelBooking']);
 
 // VG route end
 
@@ -69,5 +71,14 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/getuserservicepackage/{id}', [ServicePackages::class, 'getUserServicePackage']);
     Route::post('/adduserservicepackage', [ServicePackages::class, 'addUserServicePackage']);
 
-});
 
+
+    // Friend request api
+    Route::post('/friend_requests', [UserController::class, 'friend_requests']);
+    Route::get('/suggested_user', [UserController::class, 'suggested_user']);
+    Route::get('/friend-list', [UserController::class, 'friendList']);
+
+    // Blocked users
+     Route::get('/blocked-users', [UserController::class, 'blickedUsers']);
+
+});
