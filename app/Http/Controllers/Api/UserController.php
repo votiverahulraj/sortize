@@ -623,13 +623,12 @@ public function friendList(Request $request)
     $response = [
         'status' => 0,
         'message' => '',
-        'data' => []
+        'data' => null
     ];
 
     try {
         $userId = auth()->id();
         
-        // Get pending friend requests
         $friends = DB::table('friend_requests')
             ->join('users', 'friend_requests.to_user_id', '=', 'users.id')
             ->select('users.id', 'users.first_name', 'users.last_name', 'users.email', 'users.profile_image')
@@ -885,9 +884,7 @@ public function professional_title()
 
         return response()->json($response);
     }
-
-
-
+    
     public function updateProfileImage(Request $request)
     {
         try {
@@ -935,4 +932,33 @@ public function professional_title()
             ], 401);
         }
     }
+
+    public function pendingFriendRequest(Request $request){
+        
+        $authId = auth()->id();
+        $pendingReqs = DB::table('friend_requests')
+            ->join('users', 'friend_requests.from_user_id', '=', 'users.id')
+            ->select('users.id', 'users.first_name', 'users.last_name', 'users.email', 'users.profile_image')
+            ->where('friend_requests.to_user_id', $authId)
+            ->where('friend_requests.status', 1) // Pending
+            ->where('friend_requests.is_blocked', 0) // 0 = unblocked
+            ->where('users.is_deleted', 0)
+            ->get()
+            ->map(function ($user) {
+                $user->profile_image = asset('public/uploads/profile_image/' . $user->profile_image ? $user->profile_image : 'default_profile.png' );
+                return $user;
+            });
+
+             if ($pendingReqs->isEmpty()) {
+                $response['status'] = 1;
+                $response['message'] = "There are no pending requests.";
+                $response['data'] = [];
+            } else {
+                $response['status'] = 1;
+                $response['data'] = $pendingReqs;
+            }
+
+            return response()->json($response);
+    }
+    
 }
