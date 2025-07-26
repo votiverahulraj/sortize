@@ -52,6 +52,7 @@ Route::post('/BlockSlot', [ApiEventController::class, 'BlockSlot']);
 Route::post('/BookingEvent', [ApiEventController::class, 'BookingEvent']);
 Route::post('/UserBookedEventList', [ApiEventController::class, 'UserBookedEventList']);
 Route::post('/EventListFilters', [ApiEventController::class, 'EventListFilters']);
+Route::post('/CancelBooking', [ApiEventController::class, 'CancelBooking']);
 
 // VG route end
 

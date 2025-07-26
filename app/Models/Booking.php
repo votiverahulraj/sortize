@@ -35,7 +35,7 @@ class Booking extends Model
     // Booking belongs to an event slot
     public function slot()
     {
-        return $this->belongsTo(EventSlot::class, 'event_slot_id','id');
+        return $this->belongsTo(Session::class, 'event_slot_id','id');
     }
 
 }
